@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <script src="./js/common.js"></script>
+    <script>
+        var strSupplier = $.session.get('supplier');
+        if (strSupplier) {
+            window.location.href = './main.html';
+        }
+    </script>
+    <title>供应商登陆</title>
+    <style>
+        html {
+            width: 100%;
+        }
+
+        body {
+            background-color: #333;
+            width: 100%;
+        }
+
+        .btn-login {
+            float: right;
+        }
+
+        .main {
+            position: absolute;
+            margin: auto;
+            height: 500px;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-3">
+                    <div class="card bg-light">
+                        <div class="card-header">
+                            <h3>欢迎登陆安途丰达供应商平台</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="warehouse">登陆仓库：</label>
+                                <select id="warehouse" class="form-control">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="supplier-name">供应商名称：</label>
+                                <input type="text" id="supplier-name" class="form-control" placeholder="点击填写供应商名称" />
+                            </div>
+                            <div class="form-group">
+                                <label for="password">登陆密码：</label>
+                                <input type="password" id="password" class="form-control" placeholder="点击填写登陆密码" />
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button onclick="loginButtonClicked()" class="btn btn-primary btn-login">
+                                登陆
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function loadWarehouses() {
+        $.get(SERVER_URL + '/warehouse/' + accountBook + '/warehouse/{}', function (warehouses) {
+            var selectWarehouse = $('#warehouse');
+            for (var i = 0; i < warehouses.length; i++) {
+                var warehouse = warehouses[i];
+                selectWarehouse.append('<option value="' + warehouse.id + '">' + warehouse.name + '</option>');
+            }
+        }).error(function () {
+            alert('加载仓库信息失败，请刷新重试！');
+        });
+    }
+
+    loadWarehouses();
+</script>
+<script>
+    function loginButtonClicked() {
+        var warehouseId = $('#warehouse option:selected').val();
+        var supplierName = $('#supplier-name').val();
+        var password = $('#password').val();
+        var condition = { conditions: [{ key: 'warehouseId', values: [warehouseId] }, { key: 'name', values: [supplierName] }, { key: 'isHistory', values: [0] }] };
+        var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/' + JSON.stringify(condition);
+        $.get(encodeURI(url, "UTF-8"),
+            function (data, status) {
+                if (status != 'success') {
+                    alert('连接失败，请重试！');
+                    return;
+                }
+                var suppliers = data;
+                if (suppliers.length == 0) {
+                    alert('登陆失败，请检查用户名，密码以及登陆仓库！');
+                    return;
+                }
+                setSessionSupplier(suppliers[0]);
+                window.location.href = './main.html?column=contract';
+            }).error(
+                function (jqXHR, status, err) {
+                    alert('连接失败，请重试！');
+                    return;
+                }
+            );
+    }
+
+    function setSessionSupplier(supplier) {
+        sessionStorage.setItem('supplier', JSON.stringify(supplier));
+    }
+</script>
+
+</html>

@@ -1,0 +1,80 @@
+<div class="background">
+    <div class="container container-contract">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card bg-light">
+                    <div class="card-header">
+                        <h3>供应商合同信息</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead></thead>
+                            <tbody id="supplier-info">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .background {
+        height: 100%;
+        overflow: hidden;
+        background-color: #333333;
+    }
+
+    .container-contract {
+        margin-top: 20px;
+    }
+</style>
+
+<script>
+    var supplierFields = [
+        { displayName: '供应商代号', name: 'no' },
+        { displayName: '供货商全称', name: 'fullName' },
+        { displayName: '供货商名称', name: 'name' },
+        { displayName: '企业编码', name: 'enterpriseCode' },
+        { displayName: '合同编码', name: 'contractNo' },
+        { displayName: '合同生效时间', name: 'contractStartTime' },
+        { displayName: '合同截止时间', name: 'contractEndTime' },
+        { displayName: '开票延迟月', name: 'invoiceDelayMonth' },
+        { displayName: '结算延迟月', name: 'balanceDelayMonth' },
+        { displayName: '净面积', name: 'netArea' },
+        { displayName: '仓储固定费用', name: 'fixedStorageCost' },
+        { displayName: '合同面积', name: 'contractStorageArea' },
+        { displayName: '纳税人识别号', name: 'taxpayerNumber' },
+        { displayName: '地址', name: 'address' },
+        { displayName: '电话', name: 'tel' },
+        { displayName: '开户行', name: 'bankName' },
+        { displayName: '帐号', name: 'bankAccount' },
+        { displayName: '开户行行号', name: 'bankNo' },
+        { displayName: '邮编', name: 'zipCode' },
+        { displayName: '收件人', name: 'recipientName' },
+        { displayName: '合同状态', name: 'contractState' }
+    ]
+    var supplier = JSON.parse(sessionStorage.getItem('supplier'));
+    var tableSupplierInfo = $('#supplier-info');
+    tableSupplierInfo.html('');
+    var rows = Math.ceil(supplierFields.length / 2);
+    for (var row = 0; row < rows; row++) {
+        var newRow = $('<tr></tr>');
+        for (var col = 0; col < 2; col++) {
+            var index = row * 2 + col;
+            if (index >= supplierFields.length) {
+                newRow.append('<td></td><td></td>')
+                continue;
+            }
+            var key = supplierFields[index].displayName+'：';
+            var value = supplier[supplierFields[index].name];
+            newRow.append('<td>' + key + '</td>')
+            newRow.append('<td>' + (value ? value : '无') + '</td>')
+        }
+        tableSupplierInfo.append(newRow);
+    }
+
+
+</script>

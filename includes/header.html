@@ -1,0 +1,66 @@
+<script src='./js/common.js'></script>
+<script>
+    function validateUser() {
+        var strSupplier = sessionStorage.getItem('supplier');
+        if (!strSupplier) {
+            alert('请登录！');
+            window.location.href = '../index.html';
+            return;
+        }
+        var supplier = JSON.parse(strSupplier);
+        $('#supplier-name').html(supplier.name);
+    }
+
+    validateUser();
+</script>
+
+<style>
+    .navbar {
+        height: 100%;
+    }
+</style>
+
+<div class="navbar navbar-dark bg-dark navbar-expand-sm">
+    <div class="navbar-brand">安途丰达供应商平台</div>
+    <div class="navbar-text">&nbsp;欢迎&nbsp;
+        <span id="supplier-name">供应商</span>
+    </div>
+    <div class="nav navbar-nav ml-auto">
+        <div class="nav-item">
+            <a id="contract" class="nav-link" href="?column=contract">合同信息</a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" href="#">库存物料查看</a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" href="#">仓库面积查看</a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" href="#">结算单据确认</a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link" href="#">发票签收</a>
+        </div>
+        <div class="nav-item">
+            <a onclick="buttonExitClicked()" class="nav-link" href="#">退出登陆</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function activateNavItem() {
+        var curColumn = getQueryParam('column');
+        if (curColumn && $('#' + curColumn)) {
+            $('#' + curColumn).addClass('active');
+        }
+    }
+
+    activateNavItem();
+</script>
+
+<script>
+    function buttonExitClicked() {
+        sessionStorage.removeItem('supplier');
+        window.location.href = '../';
+    }
+</script>
