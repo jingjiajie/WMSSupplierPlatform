@@ -8,7 +8,10 @@
             return;
         }
         var supplier = JSON.parse(strSupplier);
+        var strWarehouse = sessionStorage.getItem('warehouse');
+        var warehouse = JSON.parse(strWarehouse);
         $('#supplier-name').html(supplier.name);
+        $('#warehouse-name').html(warehouse.name);
     }
 
     validateUser();
@@ -24,13 +27,15 @@
     <div class="navbar-brand">安途丰达供应商平台</div>
     <div class="navbar-text">&nbsp;欢迎&nbsp;
         <span id="supplier-name">供应商</span>
+        <span>&emsp;登陆</span>
+        <span id="warehouse-name">仓库</span>
     </div>
     <div class="nav navbar-nav ml-auto">
         <div class="nav-item">
             <a id="contract" class="nav-link" href="?column=contract">合同信息</a>
         </div>
         <div class="nav-item">
-            <a class="nav-link" href="#">库存物料查看</a>
+            <a id="stock" class="nav-link" href="?column=stock">库存物料查看</a>
         </div>
         <div class="nav-item">
             <a class="nav-link" href="#">仓库面积查看</a>
@@ -61,6 +66,7 @@
 <script>
     function buttonExitClicked() {
         sessionStorage.removeItem('supplier');
+        sessionStorage.removeItem('warehouse');
         window.location.href = '../';
     }
 </script>

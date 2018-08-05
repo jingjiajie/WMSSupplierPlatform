@@ -12,9 +12,10 @@
         crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
+    <script src="http://apps.bdimg.com/libs/underscore.js/1.7.0/underscore-min.js"></script>
     <script src="./js/common.js"></script>
     <script>
-        var strSupplier = $.session.get('supplier');
+        var strSupplier = sessionStorage.getItem('supplier');
         if (strSupplier) {
             window.location.href = './main.html';
         }
@@ -82,9 +83,12 @@
     </div>
 </body>
 <script>
+    var cachedWarehouses = [];
+
     function loadWarehouses() {
         $.get(SERVER_URL + '/warehouse/' + accountBook + '/warehouse/{}', function (warehouses) {
             var selectWarehouse = $('#warehouse');
+            cachedWarehouses = warehouses;
             for (var i = 0; i < warehouses.length; i++) {
                 var warehouse = warehouses[i];
                 selectWarehouse.append('<option value="' + warehouse.id + '">' + warehouse.name + '</option>');
@@ -99,6 +103,9 @@
 <script>
     function loginButtonClicked() {
         var warehouseId = $('#warehouse option:selected').val();
+        var warehouse = _.find(cachedWarehouses,function (curWarehouse) {
+            return curWarehouse.id == warehouseId;
+        });
         var supplierName = $('#supplier-name').val();
         var password = $('#password').val();
         var condition = { conditions: [{ key: 'warehouseId', values: [warehouseId] }, { key: 'name', values: [supplierName] }, { key: 'isHistory', values: [0] }] };
@@ -115,6 +122,7 @@
                     return;
                 }
                 setSessionSupplier(suppliers[0]);
+                setSessionWarehouse(warehouse);
                 window.location.href = './main.html?column=contract';
             }).error(
                 function (jqXHR, status, err) {
@@ -126,6 +134,10 @@
 
     function setSessionSupplier(supplier) {
         sessionStorage.setItem('supplier', JSON.stringify(supplier));
+    }
+
+    function setSessionWarehouse(warehouse) {
+        sessionStorage.setItem('warehouse', JSON.stringify(warehouse));
     }
 </script>
 

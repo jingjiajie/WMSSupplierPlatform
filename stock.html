@@ -1,0 +1,146 @@
+<div class="background">
+    <div class="container-fluid container-stock">
+        <div class="row container-stock-row">
+            <div class="col-md-12 container-stock-col">
+                <div class="card bg-light card-stock">
+                    <div class="card-header">
+                        <h3>库存信息查询</h3>
+                    </div>
+                    <div class="card-body card-body-stock">
+                        <table class="table-stock" id="table-stock"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .background {
+        height: 100%;
+        overflow: hidden;
+        background-color: #333333;
+    }
+
+    .container-stock {
+        padding: 20px 100px;
+        height: 100%;
+    }
+
+    .container-stock-row{
+        height: 100%;
+    }
+
+    .container-stock-col {
+        height: 100%;
+    }
+
+    .card-stock {
+        height: 100%;
+    }
+
+    .card-body-stock {
+        height: 100%;
+        overflow-y: hidden;
+        overflow-x: auto;
+    }
+
+    .table-stock {
+        height: 100%;
+    }
+</style>
+
+<script>
+    function initTableStock() {
+        $("#table-stock").jsGrid({
+            width: "100%",
+            height: "100%",
+
+            autoload: true,
+            controller: new StockController(),
+
+            inserting: true,
+            editing: true,
+            sorting: true,
+            paging: true,
+
+            fields: [
+                { name: 'materialNo', title: '物料代号', width: '130px' },
+                { name: 'materialName', title: '物料名称', width: '130px' },
+                { name: 'inventoryDate', title: '存货日期', width: '100px' },
+                { name: 'amount', title: '数量', width: '150px' },
+                { name: 'state', title: '检测状态' },
+                { name: 'storageLocationNo', title: '库位编码', width: '130px' },
+                { name: 'storageLocationName', title: '库位名称', width: '130px' },
+                { name: 'relatedOrderNo', title: '相关单号', width: '200px' },
+                // { name: 'batchNo', title: '批次号' }
+                // { name: 'manufactureDate', title: '生产日期', width: '130px' },
+                // { name: 'expiryDate', title: '失效日期', width: '130px' }
+
+            ]
+        });
+    }
+
+    function StockController() {
+        var strSupplier = sessionStorage.getItem('supplier');
+        var supplier = JSON.parse(strSupplier);
+        var condition = {
+            conditions: [
+                { key: 'supplierId', values: [supplier['id']] },
+                
+            ]
+        }
+        var url = SERVER_URL + '/warehouse/' + accountBook + '/stock_record/' + JSON.stringify(condition);
+        this.loadData = function () {
+            var ret = null;
+            $.ajax({
+                url: url,
+                async: false,
+                success: function (data) {
+                    handleStockData(data);
+                    ret = data;
+                },
+                error: function () {
+                    alert('加载库存数据失败，请刷新重试！');
+                    ret = null;
+                }
+            });
+            return ret;
+        }
+
+        function handleStockData(data) {
+            var STATE_NOT_INSPECTED = 0;
+            var STATE_UNQUALIFIED = 1;
+            var STATE_QUALIFIED = 2;
+            for (var i = 0; i < data.length; i++) {
+                var AMOUNT_MIN_LENGTH = 5;
+                var amountStr = null;
+                var dividedAmount = data[i].amount / data[i].unitAmount; //除以单位数量之后的数量
+                var amountLen = dividedAmount == 0 ? 1 : Math.floor(Math.log(Math.abs(data[i].amount)) / Math.log(10)) + 1;
+                var whiteSpaces = AMOUNT_MIN_LENGTH - amountLen;
+                amountStr = dividedAmount + (whiteSpaces > 0 ? new Array(whiteSpaces + 1).join('&nbsp;&nbsp;') : '') + data[i].unit;
+                if (data[i].unitAmount != 1) {
+                    amountStr += '(x' + data[i].unitAmount + ')';
+                }
+                data[i].amount = amountStr;
+                //映射检测状态
+                switch (data[i].state) {
+                    case STATE_NOT_INSPECTED:
+                        data[i].state = '检测中';
+                        break;
+                    case STATE_UNQUALIFIED:
+                        data[i].state = '不合格';
+                        break;
+                    case STATE_QUALIFIED:
+                        data[i].state = '合格';
+                        break;
+                }
+                //将存货日期保留到日
+                data[i].inventoryDate = new Date(data[i].inventoryDate).toLocaleDateString();
+            }
+        }
+    }
+</script>
+<script>
+    initTableStock();
+</script>
