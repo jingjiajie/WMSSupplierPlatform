@@ -87,6 +87,7 @@
 
     function loadWarehouses() {
         $.get(SERVER_URL + '/warehouse/' + accountBook + '/warehouse/{}', function (warehouses) {
+            console.log(warehouses);
             var selectWarehouse = $('#warehouse');
             cachedWarehouses = warehouses;
             for (var i = 0; i < warehouses.length; i++) {
