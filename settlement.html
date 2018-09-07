@@ -1,0 +1,71 @@
+<div class="background">
+    <div class="container-fluid container-stock">
+        <div class="row container-stock-row">
+            <div class="col-md-12 container-stock-col">
+                <div class="card bg-light card-stock">
+                    <div class="card-header">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <h3>库存信息查询</h3>
+                                </div>
+                                <div class="col-md-9">
+                                    <form class="form-inline">
+                                        <label for="material-name">物料名称：</label>
+                                        <input id="material-name" class="form-control" placeholder="支持模糊搜索"/>&nbsp;&nbsp;
+                                        <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
+                                        <select id="month-scope" class="form-control">
+                                            <option value="1">查看全部</option>
+                                            <option value="0">只看本月</option>
+                                        </select>
+                                    </form>
+                                </div>
+                                <div class="col-md-1">
+                                    <a id="export" class="btn btn-primary">导出Excel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body card-body-stock">
+                        <table class="table-stock" id="table-stock"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .background {
+        height: 100%;
+        overflow: hidden;
+        background-color: #333333;
+    }
+
+    .container-stock {
+        padding: 20px 100px;
+        height: 100%;
+    }
+
+    .container-stock-row {
+        height: 100%;
+    }
+
+    .container-stock-col {
+        height: 100%;
+    }
+
+    .card-stock {
+        height: 100%;
+    }
+
+    .card-body-stock {
+        height: 100%;
+        overflow-y: hidden;
+        overflow-x: auto;
+    }
+
+    .table-stock {
+        height: 100%;
+    }
+</style>
