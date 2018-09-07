@@ -7,22 +7,29 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-2">
-                                    <h3>库存信息查询</h3>
+                                    <h3>结算单据信息</h3>
                                 </div>
                                 <div class="col-md-9">
                                     <form class="form-inline">
-                                        <label for="material-name">物料名称：</label>
-                                        <input id="material-name" class="form-control" placeholder="支持模糊搜索"/>&nbsp;&nbsp;
-                                        <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
-                                        <select id="month-scope" class="form-control">
+                                        <label for="material-name">查看方式：</label>
+                                        <!-- <input id="material-name" class="form-control" placeholder="支持模糊搜索"/>&nbsp;&nbsp;
+                                        <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;  -->
+                                        <select id="month-scope" class="form-control" onchange="checkField(this.value)">
                                             <option value="1">查看全部</option>
-                                            <option value="0">只看本月</option>
+                                            <option value="0">只看未确认</option>
                                         </select>
                                     </form>
-                                </div>
+                                </div>                       
+                                <div>
+                                
+                                    <div class="col-md-1">
+                                    <a id="confirm" class="btn btn-primary">确认选中单据</a>                           
+                                </div>     
+
                                 <div class="col-md-1">
                                     <a id="export" class="btn btn-primary">导出Excel</a>
                                 </div>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -69,3 +76,13 @@
         height: 100%;
     }
 </style>
+
+<script>
+ function checkField(value) {
+        if (value==1){alert('加载仓库信息失败，请刷新重试！');}
+        else{
+            alert('00000！');
+        }
+    }
+
+</script>
