@@ -27,8 +27,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-body card-body-stock">
-                        <table class="table-stock" id="table-stock"></table>
+                    <div class="card-body card-body-settlement">
+                        <table class="table-settlement" id="table-settlement"></table>
                     </div>
                 </div>
             </div>
@@ -72,11 +72,125 @@
 </style>
 
 <script>
- function checkField(value) {
+    function checkField(value) {
         if (value==1){alert('加载仓库信息失败，请刷新重试！');}
         else{
             alert('00000！');
         }
     }
 
+    function initTableSettle() {
+        $("#table-settlement").jsGrid({
+            width: "100%",
+            height: "100%",
+
+            autoload: true,
+            controller: new SettementController() ,
+
+            inserting: true,
+            editing: true,
+            sorting: true,
+            paging: false,
+
+            fields: [ 
+                { name: 'ID', title: 'ID', width: '130px' },
+                { name: 'SettlementNoteID', title: '结算单ID', width: '130px' },
+                { name: 'SupplierID', title: '供应商ID', width: '130px' },
+                { name: 'StorageCharge', title: '仓储费', width: '130px' },
+                { name: 'LogisticFee', title: '物流费', width: '130px' },
+                { name: 'ActualPayment', title: '实付金额', width: '130px' },
+                { name: 'State', title: '状态', width: '130px' },
+                { name: 'SupplierNo', title: '供应商代号', width: '130px' },
+                { name: 'SupplierName', title: '供应商名称', width: '130px' },
+            ]
+        });
+    }
+
+    function SettementController() 
+    {
+        var strSupplier = sessionStorage.getItem('supplier');
+        var strWarehouse = sessionStorage.getItem('warehouse');
+        var supplier = JSON.parse(strSupplier);
+        var warehouse = JSON.parse(strWarehouse);
+        var conditions = [
+            { key: 'supplierId', values: [supplier['id']] }   
+        ];
+        this.loadData = function () 
+        {
+            var condition = {
+                conditions: conditions.concat(searchConditions)
+            }
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/settlement_note_item/' + JSON.stringify(condition);
+            var ret = null;
+            $.ajax({
+                url: url,
+                async: false,
+                success: function (data) {
+                    handleSettlementData(data);
+                    ret = data;
+                },
+                error: function () {
+                    alert('加载库存数据失败，请刷新重试！');
+                    ret = null;
+                }
+            });
+            return ret;
+        }
+    }
+
+    function handleSettlementData(data) {
+            var STATE_WAITTING_FOR_CONFIRM = 0;
+            var STATE_CONFIRMED = 1;
+            for (var i = 0; i < data.length; i++) {
+                //映射检测状态
+                switch (data[i].state) {
+                    case STATE_WAITTING_FOR_CONFIRM:
+                        data[i].state = '等待确认';
+                        break;
+                    case STATE_CONFIRMED:
+                        data[i].state = '已确认';
+                        break;
+                }
+                //将存货日期保留到日
+                //data[i].inventoryDate = new Date(data[i].inventoryDate.replace(/-/g, '/')).toLocaleDateString();
+            }
+        }
+
+        //base64转码
+    var base64 = function (s) {
+        return window.btoa(unescape(encodeURIComponent(s)));
+    };
+
+    //替换table数据和worksheet名字
+    var format = function (s, c) {
+        return s.replace(/{(\w+)}/g,
+            function (m, p) {
+                return c[p];
+            });
+    }
+
+    function initExport(tableid, sheetName) {
+        var uri = 'data:application/vnd.ms-excel;base64,';
+        var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"' +
+            'xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'
+            + '<x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets>'
+            + '</x:ExcelWorkbook></xml><![endif]-->' +
+            ' <style type="text/css">' +
+            'table td {' +
+            'width: 200px;' +
+            'height: 30px;' +
+            ' text-align: center;' +
+            ' }' +
+            '</style>' +
+            '</head><body ><table class="excelTable">{table}</table></body></html>';
+        if (!tableid.nodeType) tableid = document.getElementById(tableid);
+        var ctx = { worksheet: sheetName || 'Worksheet', table: tableid.innerHTML };
+        document.getElementById("export").href = uri + base64(format(template, ctx));
+    }
+
+</script>
+
+<script>
+    initTableSettle();
+    initExport('table-settlement', '结算单数据');
 </script>
