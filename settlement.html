@@ -1,8 +1,8 @@
 <div class="background">
-    <div class="container-fluid container-stock">
-        <div class="row container-stock-row">
-            <div class="col-md-12 container-stock-col">
-                <div class="card bg-light card-stock">
+    <div class="container-fluid container-settlement">
+        <div class="row container-settlement-row">
+            <div class="col-md-12 container-settlement-col">
+                <div class="card bg-light card-settlement">
                     <div class="card-header">
                         <div class="container-fluid">
                             <div class="row">
@@ -43,30 +43,30 @@
         background-color: #333333;
     }
 
-    .container-stock {
+    .container-settlement {
         padding: 20px 100px;
         height: 100%;
     }
 
-    .container-stock-row {
+    .container-settlement-row {
         height: 100%;
     }
 
-    .container-stock-col {
+    .container-settlement-col {
         height: 100%;
     }
 
-    .card-stock {
+    .card-settlement {
         height: 100%;
     }
 
-    .card-body-stock {
+    .card-body-settlement {
         height: 100%;
         overflow-y: hidden;
         overflow-x: auto;
     }
 
-    .table-stock {
+    .table-settlement {
         height: 100%;
     }
 </style>
@@ -79,11 +79,12 @@
         }
     }
 
+    var searchConditions = []; //搜索时附加的搜索条件
+
     function initTableSettle() {
         $("#table-settlement").jsGrid({
             width: "100%",
             height: "100%",
-
             autoload: true,
             controller: new SettementController() ,
 
@@ -93,15 +94,15 @@
             paging: false,
 
             fields: [ 
-                { name: 'ID', title: 'ID', width: '130px' },
-                { name: 'SettlementNoteID', title: '结算单ID', width: '130px' },
-                { name: 'SupplierID', title: '供应商ID', width: '130px' },
-                { name: 'StorageCharge', title: '仓储费', width: '130px' },
-                { name: 'LogisticFee', title: '物流费', width: '130px' },
-                { name: 'ActualPayment', title: '实付金额', width: '130px' },
-                { name: 'State', title: '状态', width: '130px' },
-                { name: 'SupplierNo', title: '供应商代号', width: '130px' },
-                { name: 'SupplierName', title: '供应商名称', width: '130px' },
+                { name: 'supplierNo', title: '供应商代号', width: '130px' },
+                { name: 'supplierName', title: '供应商名称', width: '130px' },
+                { name: 'id', title: 'ID', width: '130px' ,visible:false},
+                //{ name: 'SettlementNoteID', title: '结算单ID', width: '130px' },
+                //{ name: 'SupplierID', title: '供应商ID', width: '130px' },
+                { name: 'storageCharge', title: '仓储费', width: '130px' },
+                { name: 'logisticFee', title: '物流费', width: '130px' },
+                { name: 'actualPayment', title: '实付金额', width: '130px' },
+                { name: 'state', title: '状态', width: '130px' },
             ]
         });
     }
@@ -128,9 +129,10 @@
                 success: function (data) {
                     handleSettlementData(data);
                     ret = data;
+                    console.log(data)
                 },
                 error: function () {
-                    alert('加载库存数据失败，请刷新重试！');
+                    alert('加载结算单数据失败，请刷新重试！');
                     ret = null;
                 }
             });

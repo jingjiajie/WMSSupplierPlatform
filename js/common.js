@@ -1,4 +1,4 @@
-var SERVER_URL = 'http://localhost:9000';
+var SERVER_URL = 'http://localhost.fiddler:9000';
 var accountBook = 'WMS_Template';
 
 function getQueryParam(name) {
