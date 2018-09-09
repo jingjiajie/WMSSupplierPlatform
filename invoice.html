@@ -7,11 +7,11 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-2">
-                                    <h3>结算单据信息</h3>
+                                    <h3>发票信息</h3>
                                 </div>
                                 <div class="col-md-8">
                                     <form class="form-inline">
-                                        <label for="material-name">物料名称：</label>
+                                        <label for="material-name">查看已签收：</label>
                                         <select id="month-scope" class="form-control">
                                             <option value="1">查看全部</option>
                                             <option value="0">只看未确认</option>
@@ -87,15 +87,8 @@
             width: "100%",
             height: "100%",
             autoload: true,
-            //controller: new SettementController() ,
+            controller: new SettementController() ,
 
-            controller:
-            {
-                loadData:   SettementController(),
-                insertItem: Function,
-                uodateItem: Function,
-                deleteItem: Function
-            },
 
             inserting: true,
             editing: true,
@@ -103,16 +96,15 @@
             paging: false,
 
             fields: [ 
-                { name: 'supplierNo', title: '供应商代号', width: '130px' },
-                { name: 'supplierName', title: '供应商名称', width: '130px' },
-                { name: 'id', title: 'ID', width: '130px' ,visible:false},
-                //{ name: 'SettlementNoteID', title: '结算单ID', width: '130px'},
-                //{ name: 'SupplierID', title: '供应商ID', width: '130px' },
-                { name: 'storageCharge', title: '仓储费', width: '130px' },
-                { name: 'logisticFee', title: '物流费', width: '130px' },
-                { name: 'actualPayment', title: '实付金额', width: '130px'},
-                { name: 'state', title: '状态', width: '130px'},
-                { title: '按钮', width: '130px',type: "button"}
+            { name: 'supplierNo', title: '供应商代号', width: '130px' },
+            { name: 'supplierNo', title: '供应商名称', width: '130px' },
+            { name: 'id', title: 'ID', width: '130px' },
+            { name: 'no', title: '发票编号', width: '130px' },
+            { name: 'supplierID', title: '供应商ID', width: '130px' },
+            { name: 'time', title: '开票日期', width: '130px' },
+            { name: 'state', title: '状态', width: '130px' },
+            { name: 'trackingNumber', title: '快递单号', width: '130px' },
+            { name: 'sendingTime', title: '寄出日期', width: '130px' }
             ]
         });   
     }
@@ -131,7 +123,7 @@
             var condition = {
                 conditions: conditions.concat(searchConditions)
             }
-            var url = SERVER_URL + '/warehouse/' + accountBook + '/settlement_note_item/' + JSON.stringify(condition);
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/invoice/' + JSON.stringify(condition);
             var ret = null;
             $.ajax({
                 url: url,
@@ -203,5 +195,5 @@
 
 <script>
     initTableSettle();
-    initExport('table-settlement', '结算单数据');
+    initExport('table-settlement', '发票数据');
 </script>
