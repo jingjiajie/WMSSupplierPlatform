@@ -87,15 +87,15 @@
             width: "100%",
             height: "100%",
             autoload: true,
-            //controller: new SettementController() ,
-
+            controller: new SettementController() ,
+/*
             controller:
             {
                 loadData:   SettementController(),
                 insertItem: Function,
                 uodateItem: Function,
                 deleteItem: Function
-            },
+            },*/
 
             inserting: true,
             editing: true,
@@ -112,7 +112,7 @@
                 { name: 'logisticFee', title: '物流费', width: '130px' },
                 { name: 'actualPayment', title: '实付金额', width: '130px'},
                 { name: 'state', title: '状态', width: '130px'},
-                { title: '按钮', width: '130px',type: "button"}
+                { name:'button',title: '按钮', width: '130px'}
             ]
         });   
     }
@@ -163,10 +163,17 @@
                         data[i].state = '已确认';
                         break;
                 }
+                var id=data[i].id;
+                console.log(id);
+                data[i].button= '<button onclick="confirm('+id+')"> aa </button>';
                 //将存货日期保留到日
                 //data[i].inventoryDate = new Date(data[i].inventoryDate.replace(/-/g, '/')).toLocaleDateString();
             }
         }
+
+       function confirm(id){
+        alert(id);
+       }
 
         //base64转码
     var base64 = function (s) {
