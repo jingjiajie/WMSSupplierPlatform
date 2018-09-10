@@ -9,17 +9,14 @@
                                 <div class="col-md-2">
                                     <h3>发票信息</h3>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-9">
                                     <form class="form-inline">
-                                        <label for="material-name">查看已签收：</label>
-                                        <select id="month-scope" class="form-control">
+                                        <label for="isAll">查看方式：</label>
+                                        <select id="check-scope" class="form-control" onchange="refresh()">
                                             <option value="1">查看全部</option>
                                             <option value="0">只看未确认</option>
                                         </select>
                                     </form>
-                                </div>
-                                <div class="col-md-1">
-                                    <a id="confirm" class="btn btn-primary">确认选择条目</a>
                                 </div>
                                 <div class="col-md-1">
                                     <a id="export" class="btn btn-primary">导出Excel</a>
@@ -81,6 +78,17 @@
 
     var searchConditions = []; //搜索时附加的搜索条件
 
+    function refresh()
+    {
+        var checkScope = $('#check-scope option:selected').val();
+        searchConditions = [];
+        if (checkScope == 0) {
+            searchConditions.push({ key: 'state', values: [0], relation: 'EQUAL' });
+            console.log(searchConditions);
+        }
+        $("#table-settlement").jsGrid("search");
+    }
+
     function initTableSettle() {
 
         $("#table-settlement").jsGrid({
@@ -97,7 +105,7 @@
 
             fields: [
                 { name: 'supplierNo', title: '供应商代号', width: '130px' },
-                { name: 'supplierNo', title: '供应商名称', width: '130px' },
+                { name: 'supplierName', title: '供应商名称', width: '130px' },
                 { name: 'no', title: '发票编号', width: '130px' },
                 { name: 'time', title: '开票日期', width: '130px' },
                 { name: 'state', title: '状态', width: '130px' },
@@ -161,7 +169,7 @@
 
     function confirmSettle(id) {
 
-        var r = confirm("Press a button");
+        var r = confirm("是否确认此条目？");
         if (r == true) {
             alert("You pressed OK!");
         }

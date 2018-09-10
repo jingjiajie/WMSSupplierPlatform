@@ -11,8 +11,8 @@
                                 </div>
                                 <div class="col-md-9">
                                     <form class="form-inline">
-                                        <label for="material-name">物料名称：</label>
-                                        <select id="month-scope" class="form-control">
+                                        <label for="material-name">查看方式：</label>
+                                        <select id="check-scope" class="form-control" onchange="refresh()" onchange="refresh()">
                                             <option value="1">查看全部</option>
                                             <option value="0">只看未确认</option>
                                         </select>
@@ -78,6 +78,16 @@
 
     var searchConditions = []; //搜索时附加的搜索条件
 
+    function refresh()
+    {
+        var checkScope = $('#check-scope option:selected').val();
+        searchConditions = [];
+        if (checkScope == 0) {
+            searchConditions.push({ key: 'state', values: [0], relation: 'EQUAL' });
+        }
+        $("#table-settlement").jsGrid("search");
+    }
+
     function initTableSettle() {
 
         $("#table-settlement").jsGrid({
@@ -94,7 +104,7 @@
             fields: [
                 { name: 'supplierNo', title: '供应商代号', width: '130px' },
                 { name: 'supplierName', title: '供应商名称', width: '130px' },
-                { name: 'id', title: 'ID', width: '130px', visible: false },
+                //{ name: 'id', title: 'ID', width: '130px', visible: false },
                 //{ name: 'SettlementNoteID', title: '结算单ID', width: '130px'},
                 //{ name: 'SupplierID', title: '供应商ID', width: '130px' },
                 { name: 'storageCharge', title: '仓储费', width: '130px' },
@@ -126,7 +136,7 @@
                 success: function (data) {
                     handleSettlementData(data);
                     ret = data;
-                    console.log(data)
+                    //console.log(data)
                 },
                 error: function () {
                     alert('加载结算单数据失败，请刷新重试！');
@@ -159,7 +169,7 @@
 
     function confirmSettle(id) {
 
-        var r = confirm("Press a button");
+        var r = confirm("是否确认此条目？");
         if (r == true) {
             alert("You pressed OK!");
         }
