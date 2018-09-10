@@ -9,7 +9,7 @@
                                 <div class="col-md-2">
                                     <h3>结算单据信息</h3>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-9">
                                     <form class="form-inline">
                                         <label for="material-name">物料名称：</label>
                                         <select id="month-scope" class="form-control">
@@ -17,9 +17,6 @@
                                             <option value="0">只看未确认</option>
                                         </select>
                                     </form>
-                                </div>
-                                <div class="col-md-1">
-                                    <a id="confirm" class="btn btn-primary">确认选择条目</a>
                                 </div>
                                 <div class="col-md-1">
                                     <a id="export" class="btn btn-primary">导出Excel</a>
@@ -73,8 +70,8 @@
 
 <script>
     function checkField(value) {
-        if (value==1){alert('加载仓库信息失败，请刷新重试！');}
-        else{
+        if (value == 1) { alert('加载仓库信息失败，请刷新重试！'); }
+        else {
             alert('00000！');
         }
     }
@@ -82,52 +79,42 @@
     var searchConditions = []; //搜索时附加的搜索条件
 
     function initTableSettle() {
-        
+
         $("#table-settlement").jsGrid({
             width: "100%",
             height: "100%",
             autoload: true,
-            controller: new SettementController() ,
-/*
-            controller:
-            {
-                loadData:   SettementController(),
-                insertItem: Function,
-                uodateItem: Function,
-                deleteItem: Function
-            },*/
+            controller: new SettementController(),
 
             inserting: true,
             editing: true,
             sorting: true,
             paging: false,
 
-            fields: [ 
+            fields: [
                 { name: 'supplierNo', title: '供应商代号', width: '130px' },
                 { name: 'supplierName', title: '供应商名称', width: '130px' },
-                { name: 'id', title: 'ID', width: '130px' ,visible:false},
+                { name: 'id', title: 'ID', width: '130px', visible: false },
                 //{ name: 'SettlementNoteID', title: '结算单ID', width: '130px'},
                 //{ name: 'SupplierID', title: '供应商ID', width: '130px' },
                 { name: 'storageCharge', title: '仓储费', width: '130px' },
                 { name: 'logisticFee', title: '物流费', width: '130px' },
-                { name: 'actualPayment', title: '实付金额', width: '130px'},
-                { name: 'state', title: '状态', width: '130px'},
-                { name:'button',title: '按钮', width: '130px'}
+                { name: 'actualPayment', title: '实付金额', width: '130px' },
+                { name: 'state', title: '状态', width: '130px' },
+                { name: 'button', title: '操作', width: '130px' }
             ]
-        });   
+        });
     }
 
-    function SettementController() 
-    {
+    function SettementController() {
         var strSupplier = sessionStorage.getItem('supplier');
         var strWarehouse = sessionStorage.getItem('warehouse');
         var supplier = JSON.parse(strSupplier);
         var warehouse = JSON.parse(strWarehouse);
         var conditions = [
-            { key: 'supplierId', values: [supplier['id']] }   
+            { key: 'supplierId', values: [supplier['id']] }
         ];
-        this.loadData = function () 
-        {
+        this.loadData = function () {
             var condition = {
                 conditions: conditions.concat(searchConditions)
             }
@@ -151,31 +138,38 @@
     }
 
     function handleSettlementData(data) {
-            var STATE_WAITTING_FOR_CONFIRM = 0;
-            var STATE_CONFIRMED = 1;
-            for (var i = 0; i < data.length; i++) {
-                //映射检测状态
-                switch (data[i].state) {
-                    case STATE_WAITTING_FOR_CONFIRM:
-                        data[i].state = '等待确认';
-                        break;
-                    case STATE_CONFIRMED:
-                        data[i].state = '已确认';
-                        break;
-                }
-                var id=data[i].id;
-                console.log(id);
-                data[i].button= '<button onclick="confirm('+id+')"> aa </button>';
-                //将存货日期保留到日
-                //data[i].inventoryDate = new Date(data[i].inventoryDate.replace(/-/g, '/')).toLocaleDateString();
+        var STATE_WAITTING_FOR_CONFIRM = 0;
+        var STATE_CONFIRMED = 1;
+        for (var i = 0; i < data.length; i++) {
+            //映射检测状态
+            switch (data[i].state) {
+                case STATE_WAITTING_FOR_CONFIRM:
+                    data[i].state = '等待确认';
+                    break;
+                case STATE_CONFIRMED:
+                    data[i].state = '已确认';
+                    break;
             }
+            if (data[i].state == '等待确认') {
+                data[i].button = '<button   onclick="confirmSettle(' + data[i].id + ')"> 确认此单 </button>';
+            }
+            else if (data[i].state == '已确认') { data[i].button = '已确认'; }
         }
+    }
 
-       function confirm(id){
+    function confirmSettle(id) {
+
+        var r = confirm("Press a button");
+        if (r == true) {
+            alert("You pressed OK!");
+        }
+        else {
+            alert("You pressed Cancel!");
+        }
         alert(id);
-       }
+    }
 
-        //base64转码
+    //base64转码
     var base64 = function (s) {
         return window.btoa(unescape(encodeURIComponent(s)));
     };

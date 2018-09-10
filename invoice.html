@@ -73,8 +73,8 @@
 
 <script>
     function checkField(value) {
-        if (value==1){alert('加载仓库信息失败，请刷新重试！');}
-        else{
+        if (value == 1) { alert('加载仓库信息失败，请刷新重试！'); }
+        else {
             alert('00000！');
         }
     }
@@ -82,12 +82,12 @@
     var searchConditions = []; //搜索时附加的搜索条件
 
     function initTableSettle() {
-        
+
         $("#table-settlement").jsGrid({
             width: "100%",
             height: "100%",
             autoload: true,
-            controller: new SettementController() ,
+            controller: new SettementController(),
 
 
             inserting: true,
@@ -95,31 +95,28 @@
             sorting: true,
             paging: false,
 
-            fields: [ 
-            { name: 'supplierNo', title: '供应商代号', width: '130px' },
-            { name: 'supplierNo', title: '供应商名称', width: '130px' },
-            { name: 'id', title: 'ID', width: '130px',visible:false },
-            { name: 'no', title: '发票编号', width: '130px' },
-            { name: 'supplierID', title: '供应商ID', width: '130px' ,visible:false},
-            { name: 'time', title: '开票日期', width: '130px' },
-            { name: 'state', title: '状态', width: '130px' },
-            { name: 'trackingNumber', title: '快递单号', width: '130px' },
-            { name: 'sendingTime', title: '寄出日期', width: '130px' }
+            fields: [
+                { name: 'supplierNo', title: '供应商代号', width: '130px' },
+                { name: 'supplierNo', title: '供应商名称', width: '130px' },
+                { name: 'no', title: '发票编号', width: '130px' },
+                { name: 'time', title: '开票日期', width: '130px' },
+                { name: 'state', title: '状态', width: '130px' },
+                { name: 'trackingNumber', title: '快递单号', width: '130px' },
+                { name: 'sendingTime', title: '寄出日期', width: '130px' },
+                { name: 'button', title: '操作', width: '130px' }
             ]
-        });   
+        });
     }
 
-    function SettementController() 
-    {
+    function SettementController() {
         var strSupplier = sessionStorage.getItem('supplier');
         var strWarehouse = sessionStorage.getItem('warehouse');
         var supplier = JSON.parse(strSupplier);
         var warehouse = JSON.parse(strWarehouse);
         var conditions = [
-            { key: 'supplierId', values: [supplier['id']] }   
+            { key: 'supplierId', values: [supplier['id']] }
         ];
-        this.loadData = function () 
-        {
+        this.loadData = function () {
             var condition = {
                 conditions: conditions.concat(searchConditions)
             }
@@ -143,24 +140,38 @@
     }
 
     function handleSettlementData(data) {
-            var STATE_WAITTING_FOR_CONFIRM = 0;
-            var STATE_CONFIRMED = 1;
-            for (var i = 0; i < data.length; i++) {
-                //映射检测状态
-                switch (data[i].state) {
-                    case STATE_WAITTING_FOR_CONFIRM:
-                        data[i].state = '等待确认';
-                        break;
-                    case STATE_CONFIRMED:
-                        data[i].state = '已确认';
-                        break;
-                }
-                //将存货日期保留到日
-                //data[i].inventoryDate = new Date(data[i].inventoryDate.replace(/-/g, '/')).toLocaleDateString();
+        var STATE_WAITTING_FOR_CONFIRM = 0;
+        var STATE_CONFIRMED = 1;
+        for (var i = 0; i < data.length; i++) {
+            //映射检测状态
+            switch (data[i].state) {
+                case STATE_WAITTING_FOR_CONFIRM:
+                    data[i].state = '等待确认';
+                    break;
+                case STATE_CONFIRMED:
+                    data[i].state = '已确认';
+                    break;
             }
+            if (data[i].state == '等待确认') {
+                data[i].button = '<button  onclick="confirmSettle(' + data[i].id + ')"> 确认此单 </button>';
+            }
+            else if (data[i].state == '已确认') { data[i].button = '已确认'; }
         }
+    }
 
-        //base64转码
+    function confirmSettle(id) {
+
+        var r = confirm("Press a button");
+        if (r == true) {
+            alert("You pressed OK!");
+        }
+        else {
+            alert("You pressed Cancel!");
+        }
+        alert(id);
+    }
+
+    //base64转码
     var base64 = function (s) {
         return window.btoa(unescape(encodeURIComponent(s)));
     };
