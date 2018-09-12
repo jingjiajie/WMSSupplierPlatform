@@ -1,0 +1,200 @@
+<div class="background">
+    <div class="container-fluid container-stock">
+        <div class="row container-stock-row">
+            <div class="col-md-12 container-stock-col">
+                <div class="card bg-light card-stock">
+                    <div class="card-header">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <h3>库存信息查询</h3>
+                                </div>
+                                <div class="col-md-9">
+                                    <form class="form-inline">
+                                        <select id="month-scope" class="form-control" onchange="search()">
+                                            <option value="1">查看全部</option>
+                                            <option value="0">只看本月</option>
+                                        </select>
+                                    </form>
+                                </div>
+                                <div class="col-md-1">
+                                    <a id="export" class="btn btn-primary">导出Excel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body card-body-stock">
+                        <table class="table-stock" id="table-stock"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .background {
+        height: 100%;
+        overflow: hidden;
+        background-color: #333333;
+    }
+
+    .container-stock {
+        padding: 20px 100px;
+        height: 100%;
+    }
+
+    .container-stock-row {
+        height: 100%;
+    }
+
+    .container-stock-col {
+        height: 100%;
+    }
+
+    .card-stock {
+        height: 100%;
+    }
+
+    .card-body-stock {
+        height: 100%;
+        overflow-y: hidden;
+        overflow-x: auto;
+    }
+
+    .table-stock {
+        height: 100%;
+    }
+</style>
+<!-- 
+<script src="./js/table2excel.js"></script> -->
+
+<script>
+    var searchConditions = []; //搜索时附加的搜索条件
+
+    function search() {
+        var monthScope = $('#month-scope option:selected').val();
+        searchConditions = [];
+        var monthFirstDate = new Date(); //当月第一天
+        monthFirstDate.setDate(1);
+        monthFirstDate.setHours(0);
+        monthFirstDate.setMinutes(0);
+        monthFirstDate.setSeconds(0);
+        //if (monthScope == 0) {
+            //searchConditions.push({ key: 'inventoryDate', values: [monthFirstDate.format('yyyy-MM-dd hh:mm:ss')], relation: 'GREATER_THAN_OR_EQUAL_TO' })
+        //}
+        $("#table-stock").jsGrid("search");
+    }
+
+    function initTableStock() {
+        $("#table-stock").jsGrid({
+            width: "100%",
+            height: "100%",
+
+            autoload: true,
+            controller: new StockController(),
+
+            inserting: true,
+            editing: true,
+            sorting: true,
+            paging: false,
+
+            fields: [
+                { name: 'totalArea', title: '总面积', width: '130px' },
+                { name: 'days', title: '放置天数', width: '130px' },
+                { name: 'deliveryTimes', title: '出货次数', width: '100px' },
+                { name: 'button', title: '  查看详情', width: '130px' }
+            ]
+        });
+    }
+
+    function StockController() {
+        var strSupplier = sessionStorage.getItem('supplier');
+        var strWarehouse = sessionStorage.getItem('warehouse');
+        var supplier = JSON.parse(strSupplier);
+        var warehouse = JSON.parse(strWarehouse);
+        var conditions = [
+            { key: 'supplierId', values: [supplier['id']] }
+        ];
+
+        this.loadData = function () {
+            var condition = {
+                conditions: conditions.concat(searchConditions)
+            }
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/summary_note_item/' + JSON.stringify(condition);
+            var ret = null;
+            $.ajax({
+                url: url,
+                async: false,
+                success: function (data) {
+                    handleStockData(data);
+                    ret = data;
+                },
+                error: function () {
+                    alert('加载库存数据失败，请刷新重试！');
+                    ret = null;
+                }
+            });
+            return ret;
+        }
+
+        function handleStockData(data) {
+            var STATE_NOT_INSPECTED = 0;
+            var STATE_UNQUALIFIED = 1;
+            var STATE_QUALIFIED = 2;
+            for (var i = 0; i < data.length; i++) {
+                //增加按钮
+                data[i].button = '<button onclick="checkDetails(' + data[i].id + ')"> 查看详情 </button>';
+
+                //data[i].button =' <a id="areadetial" class="btn btn-primary navbar-btn"  onclick="checkDetails(' + data[i].id + ')" > 面积详情</a>';
+            } 
+        }
+    }
+ 
+    function checkDetails(id) {
+        alert(id);
+        href="?column=areadetial";
+        window.open(href);
+        /*
+        var obj = id; //传给弹出页面参数
+        var url = 'areadetails.html';
+        url = encodeURI(url);
+        window.open(url, "", "width=600,height=400");*/
+    }
+
+    //base64转码
+    var base64 = function (s) {
+        return window.btoa(unescape(encodeURIComponent(s)));
+    };
+    //替换table数据和worksheet名字
+    var format = function (s, c) {
+        return s.replace(/{(\w+)}/g,
+            function (m, p) {
+                return c[p];
+            });
+    }
+    function initExport(tableid, sheetName) {
+        var uri = 'data:application/vnd.ms-excel;base64,';
+        var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"' +
+            'xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'
+            + '<x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets>'
+            + '</x:ExcelWorkbook></xml><![endif]-->' +
+            ' <style type="text/css">' +
+            'table td {' +
+            'width: 200px;' +
+            'height: 30px;' +
+            ' text-align: center;' +
+            ' }' +
+            '</style>' +
+            '</head><body ><table class="excelTable">{table}</table></body></html>';
+        if (!tableid.nodeType) tableid = document.getElementById(tableid);
+        var ctx = { worksheet: sheetName || 'Worksheet', table: tableid.innerHTML };
+        document.getElementById("export").href = uri + base64(format(template, ctx));
+    }
+
+
+</script>
+<script>
+    initTableStock();
+    initExport('table-stock', '库存数据');
+</script>
