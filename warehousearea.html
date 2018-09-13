@@ -150,11 +150,14 @@
             } 
         }
     }
+
+    
  
     function checkDetails(id) {
-        alert(id);
-        href="?column=areadetial";
+        href="?column=areadetails";
+        sessionStorage.setItem('summaryItemId', id);
         window.open(href);
+        
         /*
         var obj = id; //传给弹出页面参数
         var url = 'areadetails.html';

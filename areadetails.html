@@ -12,12 +12,8 @@
                                 <div class="col-md-9">
                                     <form class="form-inline">
                                         <label for="material-name">物料名称：</label>
-                                        <input id="material-name" class="form-control" placeholder="支持模糊搜索"/>&nbsp;&nbsp;
+                                        <input id="material-name" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
                                         <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
-                                        <select id="month-scope" class="form-control">
-                                            <option value="1">查看全部</option>
-                                            <option value="0">只看本月</option>
-                                        </select>
                                     </form>
                                 </div>
                                 <div class="col-md-1">
@@ -69,29 +65,17 @@
         height: 100%;
     }
 </style>
-<!-- 
-<script src="./js/table2excel.js"></script> -->
+
+
+
 
 <script>
     var searchConditions = []; //搜索时附加的搜索条件
-
+    var id=sessionStorage.getItem('summaryItemId');
     function searchClicked() {
         var materialName = $('#material-name').val();
         var monthScope = $('#month-scope option:selected').val();
         searchConditions = [];
-        if (materialName.length > 0) {
-            searchConditions = [
-                { key: 'materialName', values: [materialName], relation: "CONTAINS" }
-            ];
-        }
-        var monthFirstDate = new Date(); //当月第一天
-        monthFirstDate.setDate(1);
-        monthFirstDate.setHours(0);
-        monthFirstDate.setMinutes(0);
-        monthFirstDate.setSeconds(0);
-        if (monthScope == 0) {
-            searchConditions.push({ key: 'inventoryDate', values: [monthFirstDate.format('yyyy-MM-dd hh:mm:ss')], relation: 'GREATER_THAN_OR_EQUAL_TO' })
-        }
         $("#table-stock").jsGrid("search");
     }
 
@@ -108,16 +92,16 @@
             sorting: true,
             paging: false,
 
-            fields: [
+            fields: [              
+                { name: 'storageLocations', title: '列数', width: '130px' },
+                { name: 'trays', title: '托数', width: '130px' },
+                { name: 'area', title: '面积', width: '130px' },
+                { name: 'deliveryAmount', title: '出货数', width: '130px' },   
                 { name: 'materialNo', title: '物料代号', width: '130px' },
                 { name: 'materialName', title: '物料名称', width: '130px' },
-                { name: 'inventoryDate', title: '存货日期', width: '100px' },
-                { name: 'amount', title: '数量', width: '50px' },
-                { name: 'unit', title: '单位', width: '100px' },
-                { name: 'state', title: '检测状态' },
-                { name: 'storageLocationNo', title: '库位编码', width: '130px' },
-                { name: 'storageLocationName', title: '库位名称', width: '130px' },
-                { name: 'relatedOrderNo', title: '相关单号', width: '200px' },
+                { name: 'materialProductLine', title: '系列', width: '130px' },
+                { name: 'supplierNo', title: '供应商代号', width: '130px' },
+                { name: 'supplierName', title: '供货商名称', width: '130px' }
             ]
         });
     }
@@ -128,16 +112,14 @@
         var supplier = JSON.parse(strSupplier);
         var warehouse = JSON.parse(strWarehouse);
         var conditions = [
-            { key: 'supplierId', values: [supplier['id']] },
-            { key: 'warehouseId', values: [warehouse['id']] },
-            { key: 'amount', values: [0], relation: 'GREATER_THAN' }
+            { key: 'summaryNoteItemId', values: [id] }
         ];
 
         this.loadData = function () {
             var condition = {
                 conditions: conditions.concat(searchConditions)
             }
-            var url = SERVER_URL + '/warehouse/' + accountBook + '/stock_record/' + JSON.stringify(condition);
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/summary_details/' + JSON.stringify(condition);
             var ret = null;
             $.ajax({
                 url: url,
@@ -155,31 +137,7 @@
         }
 
         function handleStockData(data) {
-            var STATE_NOT_INSPECTED = 0;
-            var STATE_UNQUALIFIED = 1;
-            var STATE_QUALIFIED = 2;
             for (var i = 0; i < data.length; i++) {
-                var dividedAmount = data[i].amount / data[i].unitAmount; //除以单位数量之后的数量
-                var unitStr = data[i].unit;
-                if (data[i].unitAmount != 1) {
-                    unitStr += '(x' + data[i].unitAmount + ')';
-                }
-                data[i].amount = dividedAmount;
-                data[i].unit = unitStr;
-                //映射检测状态
-                switch (data[i].state) {
-                    case STATE_NOT_INSPECTED:
-                        data[i].state = '检测中';
-                        break;
-                    case STATE_UNQUALIFIED:
-                        data[i].state = '不合格';
-                        break;
-                    case STATE_QUALIFIED:
-                        data[i].state = '合格';
-                        break;
-                }
-                //将存货日期保留到日
-                data[i].inventoryDate = new Date(data[i].inventoryDate.replace(/-/g, '/')).toLocaleDateString();
             }
         }
     }
@@ -213,7 +171,6 @@
         var ctx = { worksheet: sheetName || 'Worksheet', table: tableid.innerHTML };
         document.getElementById("export").href = uri + base64(format(template, ctx));
     }
-
 
 </script>
 <script>
