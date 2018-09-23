@@ -78,8 +78,7 @@
 
     var searchConditions = []; //搜索时附加的搜索条件
 
-    function refresh()
-    {
+    function refresh() {
         var checkScope = $('#check-scope option:selected').val();
         searchConditions = [];
         if (checkScope == 0) {
@@ -170,13 +169,25 @@
     function confirmSettle(id) {
 
         var r = confirm("是否确认此条目？");
+        var ids = [id];
+        var json = JSON.stringify(ids);
         if (r == true) {
-            alert("You pressed OK!");
+            console.log(json);
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/settlement_note_item/confirm/'+id;
+            console.log(url);
+            $.ajax({
+                url: url,
+                async: false,
+                method:'POST',      
+                success: function () {
+                    alert('确认成功！');
+                    $("#table-settlement").jsGrid("search");
+                },
+                error: function () {
+                    alert('确认失败！');
+                }
+            });
         }
-        else {
-            alert("You pressed Cancel!");
-        }
-        alert(id);
     }
 
     //base64转码
