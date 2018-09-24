@@ -92,14 +92,15 @@
             sorting: true,
             paging: false,
 
-            fields: [              
+            fields: [       
+                { name: 'materialNo', title: '物料代号', width: '130px' },
+                { name: 'materialName', title: '物料名称', width: '130px' },
+                { name: 'materialProductLine', title: '系列', width: '130px' },    
                 { name: 'storageLocations', title: '列数', width: '130px' },
                 { name: 'trays', title: '托数', width: '130px' },
                 { name: 'area', title: '面积', width: '130px' },
-                { name: 'deliveryAmount', title: '出货数', width: '130px' },   
-                { name: 'materialNo', title: '物料代号', width: '130px' },
-                { name: 'materialName', title: '物料名称', width: '130px' },
-                { name: 'materialProductLine', title: '系列', width: '130px' }
+                { name: 'deliveryAmount', title: '出货数', width: '130px' }
+
             ]
         });
     }
