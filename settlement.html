@@ -160,7 +160,7 @@
                     break;
             }
             if (data[i].state == '等待确认') {
-                data[i].button = '<button   onclick="confirmSettle(' + data[i].id + ')"> 确认此单 </button>';
+                data[i].button = '<button class="btn btn-primary"  onclick="confirmSettle(' + data[i].id + ')"> 确认此单 </button>';
             }
             else if (data[i].state == '已确认') { data[i].button = '已确认'; }
         }

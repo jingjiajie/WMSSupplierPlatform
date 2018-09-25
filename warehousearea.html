@@ -144,9 +144,8 @@
             var STATE_QUALIFIED = 2;
             for (var i = 0; i < data.length; i++) {
                 //增加按钮
-                data[i].button = '<button onclick="checkDetails(' + data[i].id + ')"> 查看详情 </button>';
-
-                //data[i].button =' <a id="areadetial" class="btn btn-primary navbar-btn"  onclick="checkDetails(' + data[i].id + ')" > 面积详情</a>';
+                //data[i].button = '<button class="btn btn-primary" onclick="checkDetails(' + data[i].id + ')"> 查看详情123 </button>';
+                data[i].button =' <a id="areadetial" class="btn btn-primary navbar-btn"  onclick="checkDetails(' + data[i].id + ')" > 面积详情</a>';
             } 
         }
     }
@@ -157,12 +156,6 @@
         href="?column=areadetails";
         sessionStorage.setItem('summaryItemId', id);
         window.open(href);
-        
-        /*
-        var obj = id; //传给弹出页面参数
-        var url = 'areadetails.html';
-        url = encodeURI(url);
-        window.open(url, "", "width=600,height=400");*/
     }
 
     //base64转码
