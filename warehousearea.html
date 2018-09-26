@@ -7,7 +7,7 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-2">
-                                    <h3>库存信息查询</h3>
+                                    <h3>仓库面积信息</h3>
                                 </div>
                                 <div class="col-md-9">
                                     <form class="form-inline">
@@ -144,8 +144,8 @@
             var STATE_QUALIFIED = 2;
             for (var i = 0; i < data.length; i++) {
                 //增加按钮
-                //data[i].button = '<button class="btn btn-primary" onclick="checkDetails(' + data[i].id + ')"> 查看详情123 </button>';
-                data[i].button =' <a id="areadetial" class="btn btn-primary navbar-btn"  onclick="checkDetails(' + data[i].id + ')" > 面积详情</a>';
+                data[i].button ='<button   class="btn btn-primary"  onclick="checkDetails(' + data[i].id + ')" > 面积详情 </button>';
+                //data[i].button = '<button   class="btn btn-primary" onclick="checkDetails(' + data[i].id + ')"> 确认此单 </button>';
             } 
         }
     }
