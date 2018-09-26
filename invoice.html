@@ -83,7 +83,7 @@
         var checkScope = $('#check-scope option:selected').val();
         searchConditions = [];
         if (checkScope == 0) {
-            searchConditions.push({ key: 'state', values: [0], relation: 'EQUAL' });
+            searchConditions.push({ key: 'state', values: [1], relation: 'EQUAL' });
             console.log(searchConditions);
         }
         $("#table-settlement").jsGrid("search");
@@ -122,7 +122,8 @@
         var supplier = JSON.parse(strSupplier);
         var warehouse = JSON.parse(strWarehouse);
         var conditions = [
-            { key: 'supplierId', values: [supplier['id']] }
+            { key: 'supplierId', values: [supplier['id']] },
+            { key: 'state', values: [1,2],relation:'IN'}
         ];
         this.loadData = function () {
             var condition = {
@@ -136,10 +137,9 @@
                 success: function (data) {
                     handleSettlementData(data);
                     ret = data;
-                    console.log(data)
                 },
                 error: function () {
-                    alert('加载结算单数据失败，请刷新重试！');
+                    alert('加载发票数据失败，请刷新重试！');
                     ret = null;
                 }
             });
@@ -148,8 +148,8 @@
     }
 
     function handleSettlementData(data) {
-        var STATE_WAITTING_FOR_CONFIRM = 0;
-        var STATE_CONFIRMED = 1;
+        var STATE_WAITTING_FOR_CONFIRM = 1;
+        var STATE_CONFIRMED = 2;
         for (var i = 0; i < data.length; i++) {
             //映射检测状态
             switch (data[i].state) {
