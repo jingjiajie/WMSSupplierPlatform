@@ -7,7 +7,7 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-2">
-                                    <h3>库存信息查询</h3>
+                                    <h3>详情查询</h3>
                                 </div>
                                 <div class="col-md-9">
                                     <form class="form-inline">
@@ -73,9 +73,10 @@
     var searchConditions = []; //搜索时附加的搜索条件
     var id=sessionStorage.getItem('summaryItemId');
     function searchClicked() {
+        console.log('asadasdads');
         var materialName = $('#material-name').val();
-        var monthScope = $('#month-scope option:selected').val();
-        searchConditions = [];
+        searchConditions = { key: 'materialName', values: [materialName], relation: "CONTAINS" };
+        console.log(searchConditions);
         $("#table-stock").jsGrid("search");
     }
 
@@ -113,7 +114,9 @@
         var conditions = [
             { key: 'summaryNoteItemId', values: [id] }
         ];
-
+        var condition = {
+                conditions: conditions.concat(searchConditions)
+            };
         this.loadData = function () {
             var condition = {
                 conditions: conditions.concat(searchConditions)
