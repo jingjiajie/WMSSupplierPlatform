@@ -171,10 +171,21 @@
 
         var r = confirm("是否确认此条目？");
         if (r == true) {
-            alert("You pressed OK!");
-        }
-        else {
-            alert("You pressed Cancel!");
+          //console.log(json);
+          var url = SERVER_URL + '/warehouse/' + accountBook + '/invoice/confirm/'+id;
+            //console.log(url);
+            $.ajax({
+                url: url,
+                async: false,
+                method:'POST',      
+                success: function () {
+                    alert('确认成功！');
+                    $("#table-settlement").jsGrid("search");
+                },
+                error: function () {
+                    alert('确认失败！');
+                }
+            });
         }
     }
 

@@ -172,9 +172,9 @@
         var ids = [id];
         var json = JSON.stringify(ids);
         if (r == true) {
-            console.log(json);
+            //console.log(json);
             var url = SERVER_URL + '/warehouse/' + accountBook + '/settlement_note_item/confirm/'+id;
-            console.log(url);
+            //console.log(url);
             $.ajax({
                 url: url,
                 async: false,
