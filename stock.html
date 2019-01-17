@@ -217,9 +217,30 @@
         var ctx = { worksheet: sheetName || 'Worksheet', table: tableid.innerHTML };
         document.getElementById("export").href = uri + base64(format(template, ctx));
     }
+    
+    supplierRemindStock();
 
-
+        function supplierRemindStock() {
+        var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/remind/{'+1+"}";
+        $.get(encodeURI(url, "UTF-8"),
+            function (data, status) {
+                if (status != 'success') {
+                    alert('连接失败，请重试！');
+                    return;
+                }
+                var supplierRemind = data;
+                if (supplierRemind.length == 0) {
+                    alert('1111！');
+                }
+            }).error(
+                function (jqXHR, status, err) {
+                    alert('连接失败，请重试！');
+                    return;
+                }
+            );
+    }
 </script>
+
 <script>
     initTableStock();
     initExport('table-stock', '库存数据');
