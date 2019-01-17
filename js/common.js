@@ -1,5 +1,6 @@
 var SERVER_URL = 'https://localhost:9000';
 var accountBook = 'WMS_Template';
+var remindTimes=0;
 
 function getQueryParam(name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
