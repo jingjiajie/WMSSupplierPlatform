@@ -109,7 +109,7 @@
         });
         var supplierName = $('#supplier-name').val();
         var password = $('#password').val();
-        var condition = { conditions: [{ key: 'warehouseId', values: [warehouseId] }, { key: 'name', values: [supplierName] }, { key: 'isHistory', values: [0] }] };
+        var condition = { conditions: [{ key: 'warehouseId', values: [warehouseId] }, { key: 'name', values: [supplierName] }, { key: 'isHistory', values: [0] },{key:'supplierPassward',values:[password]}] };
         var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/' + JSON.stringify(condition);
         $.get(encodeURI(url, "UTF-8"),
             function (data, status) {

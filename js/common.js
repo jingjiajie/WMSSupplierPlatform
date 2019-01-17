@@ -1,4 +1,4 @@
-var SERVER_URL = 'http://localhost:9000';
+var SERVER_URL = 'https://localhost:9000';
 var accountBook = 'WMS_Template';
 
 function getQueryParam(name) {
