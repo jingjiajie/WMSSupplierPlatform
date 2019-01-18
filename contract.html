@@ -33,6 +33,28 @@
 </style>
 
 <script>
+    function supplierRemindStock() {
+        var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/remind/{'+1+"}";
+        $.get(encodeURI(url, "UTF-8"),
+            function (data, status) {
+                if (status != 'success') {
+                    alert('连接失败，请重试！');
+                    return;
+                }
+                var supplierRemind = data;
+                if (supplierRemind.length == 0) {
+                    alert('1111！');
+                }
+            }).error(
+                function (jqXHR, status, err) {
+                    alert('连接失败，请重试！');
+                    return;
+                }
+            );
+    }
+
+    supplierRemindStock()
+
     var supplierFields = [
         { displayName: '供应商代号', name: 'no' },
         { displayName: '供货商全称', name: 'fullName' },
