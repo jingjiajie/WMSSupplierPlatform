@@ -53,6 +53,10 @@
 </div>
 
 <script>
+sessionStorage.setItem("remind",0);
+</script>
+
+<script>
     function activateNavItem() {
         var curColumn = getQueryParam('column');
         if (curColumn && $('#' + curColumn)) {
