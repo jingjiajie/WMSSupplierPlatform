@@ -182,13 +182,13 @@
             var STATE_UNQUALIFIED = 1;
             var STATE_QUALIFIED = 2;
             for (var i = 0; i < data.length; i++) {
-                var dividedAmount = data[i].amount / data[i].unitAmount; //除以单位数量之后的数量
-                var unitStr = data[i].unit;
-                if (data[i].unitAmount != 1) {
-                    unitStr += '(x' + data[i].unitAmount + ')';
-                }
-                data[i].amount = dividedAmount;
-                data[i].unit = unitStr;
+                //var dividedAmount = data[i].amount / data[i].unitAmount; //除以单位数量之后的数量
+                //var unitStr = data[i].unit;
+                //if (data[i].unitAmount != 1) {
+                //    unitStr += '(x' + data[i].unitAmount + ')';
+               // }
+               // data[i].amount = dividedAmount;
+                //data[i].unit = unitStr;
                 //映射检测状态
                 switch (data[i].state) {
                     case STATE_NOT_INSPECTED:
