@@ -12,9 +12,9 @@
                                 <div class="col-md-9">
                                     <form class="form-inline">
                                         <label for="material-name">物料名称：</label>
-                                        <input id="material-name" class="form-control" placeholder="支持模糊搜索"/>&nbsp;&nbsp;
+                                        <input id="material-name" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
                                         <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
-                                        <div onclick="supplierRemindStock()" class="btn btn-primary">提醒</div>&nbsp;&nbsp;
+                                        <div onclick="supplierRemindStock(true)" class="btn btn-primary">查看库存提醒</div>&nbsp;&nbsp;
                                         <select id="month-scope" class="form-control">
                                             <option value="1">查看全部</option>
                                             <option value="0">只看本月</option>
@@ -72,6 +72,24 @@
 </style>
 <!-- 
 <script src="./js/table2excel.js"></script> -->
+
+<script>
+    function StringBuilder() {
+        this.init();
+    };
+    //初始化StringBuilder类  
+    StringBuilder.prototype.init = function () {
+        this.array = [];
+    };
+    //追加数据到StringBuilder类  
+    StringBuilder.prototype.append = function (element) {
+        this.array.push(element);
+    };
+    //转换成String  
+    StringBuilder.prototype.toString = function () {
+        return this.array.join("");
+    };
+</script>
 
 <script>
     var searchConditions = []; //搜索时附加的搜索条件
@@ -218,11 +236,11 @@
         var ctx = { worksheet: sheetName || 'Worksheet', table: tableid.innerHTML };
         document.getElementById("export").href = uri + base64(format(template, ctx));
     }
-    
-    supplierRemindStock();
-      
-    function supplierRemindStock() {
-        var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/remind/{'+1+"}";
+
+    supplierRemindStock(false);
+
+    function supplierRemindStock(remindNull) {
+        var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/remind/{' + 1 + "}";
         $.get(encodeURI(url, "UTF-8"),
             function (data, status) {
                 if (status != 'success') {
@@ -230,8 +248,31 @@
                     return;
                 }
                 var supplierRemind = data;
-                if (supplierRemind.length == 0) {
-                    alert('1111！');
+                var sb = new StringBuilder("");
+                if (supplierRemind.length != 0) {
+                    //物料 数量 需求数量
+                    for (var i = 0; i < data.length; i++) {
+                        var materialName = data[i].materialName;
+                        var amount = data[i].amount;
+                        var amountNeed = data[i].amountNeed;
+                        if (amount < amountNeed) {
+                            sb.append("物料：");
+                            sb.append(materialName);
+                            sb.append("现有合格品数量：");
+                            sb.append(amount);
+                            sb.append("已经小于供货安全库存：");
+                            sb.append(amountNeed);
+                            sb.append("，请及时供货！");
+                            sb.append("\n");
+                        }
+                    }
+                }
+                if(sb!="")
+                {
+                alert(sb);
+                }
+                else if(sb==""&&remindNull==true){
+                    alert("您的库存充足！");
                 }
             }).error(
                 function (jqXHR, status, err) {
