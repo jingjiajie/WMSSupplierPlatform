@@ -33,26 +33,6 @@
 </style>
 
 <script>
-    function supplierRemindStock() {
-        var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/remind/{'+1+"}";
-        $.get(encodeURI(url, "UTF-8"),
-            function (data, status) {
-                if (status != 'success') {
-                    alert('连接失败，请重试！');
-                    return;
-                }
-                var supplierRemind = data;
-                if (supplierRemind.length == 0) {
-                    alert('1111！');
-                }
-            }).error(
-                function (jqXHR, status, err) {
-                    alert('连接失败，请重试！');
-                    return;
-                }
-            );
-    }
-
     var supplierFields = [
         { displayName: '供应商代号', name: 'no' },
         { displayName: '供货商全称', name: 'fullName' },
@@ -88,12 +68,40 @@
                 newRow.append('<td></td><td></td>')
                 continue;
             }
-            var key = supplierFields[index].displayName+'：';
+            var key = supplierFields[index].displayName + '：';
             var value = supplier[supplierFields[index].name];
             newRow.append('<td>' + key + '</td>')
             newRow.append('<td>' + (value ? value : '无') + '</td>')
         }
         tableSupplierInfo.append(newRow);
     }
+
+    var a;
+    function supplierRemindContract() {
+        var dateEndStr = supplier["contractEndTime"];
+        var myDate = new Date();
+        myDate.getYear();        //获取当前年份(2位)
+        myDate.getFullYear();    //获取完整的年份(4位,1970-????)
+        myDate.getMonth();       //获取当前月份(0-11,0代表1月)
+        myDate.getDate();        //获取当前日(1-31)
+        myDate.getDay();         //获取当前星期X(0-6,0代表星期天)
+        myDate.getTime();        //获取当前时间(从1970.1.1开始的毫秒数)
+        myDate.getHours();       //获取当前小时数(0-23)
+        myDate.getMinutes();     //获取当前分钟数(0-59)
+        myDate.getSeconds();     //获取当前秒数(0-59)
+        myDate.getMilliseconds();    //获取当前毫秒数(0-999)
+        myDate.toLocaleDateString();     //获取当前日期
+        var dateEnd = new Date(dateEndStr);
+        var dateRemine = (dateEnd - myDate)/(1000 * 60 * 60 * 24);
+        a=dateRemine;
+        if (dateRemine>0&dateRemine<=10) {
+            alert("您的合同已不足10天到期!");
+        }
+        if(dateRemine<=0){
+            alert("您的合同已过期!");
+        }
+
+    }
+    supplierRemindContract();
 
 </script>
