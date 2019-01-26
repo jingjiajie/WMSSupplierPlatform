@@ -1,5 +1,5 @@
-//var SERVER_URL = 'https://localhost:9000';
-var SERVER_URL = 'https://47.93.35.199:9000';
+var SERVER_URL = 'https://localhost:9000';
+//var SERVER_URL = 'https://47.93.35.199:9000';
 var accountBook = 'WMS_Template';
 
 
