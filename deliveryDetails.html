@@ -1,0 +1,176 @@
+<div class="background">
+    <div class="container-fluid container-stock">
+        <div class="row container-stock-row">
+            <div class="col-md-12 container-stock-col">
+                <div class="card bg-light card-stock">
+                    <div class="card-header">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <h3>详情查询</h3>
+                                </div>
+                                <div class="col-md-9">
+                                    <form class="form-inline">
+                                        <label for="material-name">日期：</label>
+                                        <input id="material-name" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
+                                        <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
+                                    </form>
+                                </div>
+                                <div class="col-md-1">
+                                    <a id="export" class="btn btn-primary">导出Excel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body card-body-stock">
+                        <table class="table-stock" id="table-stock"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .background {
+        height: 100%;
+        overflow: hidden;
+        background-color: #333333;
+    }
+
+    .container-stock {
+        padding: 20px 100px;
+        height: 100%;
+    }
+
+    .container-stock-row {
+        height: 100%;
+    }
+
+    .container-stock-col {
+        height: 100%;
+    }
+
+    .card-stock {
+        height: 100%;
+    }
+
+    .card-body-stock {
+        height: 100%;
+        overflow-y: hidden;
+        overflow-x: auto;
+    }
+
+    .table-stock {
+        height: 100%;
+    }
+</style>
+
+
+
+
+<script>
+    var searchConditions = []; //搜索时附加的搜索条件
+    function searchClicked() {
+        var materialName = $('#material-name').val();
+        searchConditions = { key: 'materialName', values: [materialName], relation: "CONTAINS" };
+        console.log(searchConditions);
+        $("#table-stock").jsGrid("search");
+    }
+
+    function initTableStock() {
+        $("#table-stock").jsGrid({
+            width: "100%",
+            height: "100%",
+
+            autoload: true,
+            controller: new MaterialController(),
+
+            inserting: true,
+            editing: true,
+            sorting: true,
+            paging: false,
+
+            fields: [   
+                { name: 'supplierName', title: '供应商名称', width: '130px' },
+                { name: 'materialNo', title: '物料代号', width: '130px' },
+                { name: 'materialName', title: '物料名称', width: '130px' },
+                { name: 'materialProductLine', title: '系列', width: '130px' }
+
+            ]
+        });
+    }
+
+    function MaterialController() {
+        var strSupplier = sessionStorage.getItem('supplier');
+        var strWarehouse = sessionStorage.getItem('warehouse');
+        var supplier = JSON.parse(strSupplier);
+        var warehouse = JSON.parse(strWarehouse);
+        var conditions = [
+            { key: 'supplierId',values:[supplier['id']]}
+        ];
+        var condition = {
+                conditions: conditions.concat(searchConditions)
+            };
+        this.loadData = function () {
+            var condition = {
+                conditions: conditions.concat(searchConditions)
+            }
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/delivery_order/' + JSON.stringify(condition);
+            var ret = null;
+            $.ajax({
+                url: url,
+                async: false,
+                success: function (data) {
+                    handleMaterialData(data);
+                    ret = data;
+                },
+                error: function () {
+                    alert('加载出库数据失败，请刷新重试！');
+                    ret = null;
+                }
+            });
+            return ret;
+        }
+
+        function handleMaterialData(data) {
+            for (var i = 0; i < data.length; i++) {
+            }
+        }
+    }
+
+    //base64转码
+    var base64 = function (s) {
+        return window.btoa(unescape(encodeURIComponent(s)));
+    };
+    //替换table数据和worksheet名字
+    var format = function (s, c) {
+        return s.replace(/{(\w+)}/g,
+            function (m, p) {
+                return c[p];
+            });
+    }
+    function initExport(tableid, sheetName) {
+        var uri = 'data:application/vnd.ms-excel;base64,';
+        var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"' +
+            'xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'
+            + '<x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets>'
+            + '</x:ExcelWorkbook></xml><![endif]-->' +
+            ' <style type="text/css">' +
+            'table td {' +
+            'width: 200px;' +
+            'height: 30px;' +
+            ' text-align: center;' +
+            ' }' +
+            '</style>' +
+            '</head><body ><table class="excelTable">{table}</table></body></html>';
+        if (!tableid.nodeType) tableid = document.getElementById(tableid);
+        var ctx = { worksheet: sheetName || 'Worksheet', table: tableid.innerHTML };
+        document.getElementById("export").href = uri + base64(format(template, ctx));
+    }
+
+</script>
+<script>
+    initTableStock();
+    initExport('table-stock', '出库数据');
+</script>
