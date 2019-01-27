@@ -15,6 +15,8 @@
                                         <input id="material-name" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
                                         <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
                                         <div onclick="supplierRemindStock(true)" class="btn btn-primary">查看库存提醒</div>&nbsp;&nbsp;
+                                        <div onclick="checkDeliverDetails()" class="btn btn-primary">查看出库详情</div>&nbsp;&nbsp;
+                                        <div onclick="checkReturnRecord()" class="btn btn-primary">查看退货原因记录</div>&nbsp;&nbsp;
                                         <select id="month-scope" class="form-control">
                                             <option value="1">查看全部</option>
                                             <option value="0">只看本月</option>
@@ -72,6 +74,13 @@
 </style>
 <!-- 
 <script src="./js/table2excel.js"></script> -->
+
+<script>
+    function checkReturnRecord() {
+            href="?column=return";
+            window.open(href);
+        }
+</script>
 
 <script>
     function StringBuilder() {
