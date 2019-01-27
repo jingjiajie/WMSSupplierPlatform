@@ -71,9 +71,7 @@
 
 <script>
     var searchConditions = []; //搜索时附加的搜索条件
-    var id=sessionStorage.getItem('summaryItemId');
     function searchClicked() {
-        console.log('asadasdads');
         var materialName = $('#material-name').val();
         searchConditions = { key: 'materialName', values: [materialName], relation: "CONTAINS" };
         console.log(searchConditions);
@@ -109,7 +107,7 @@
         var supplier = JSON.parse(strSupplier);
         var warehouse = JSON.parse(strWarehouse);
         var conditions = [
-            { key: 'supplierId', values: supplier[id] }
+            { key: 'supplierId',values:[supplier['id']]}
         ];
         var condition = {
                 conditions: conditions.concat(searchConditions)
@@ -128,7 +126,7 @@
                     ret = data;
                 },
                 error: function () {
-                    alert('加载库存数据失败，请刷新重试！');
+                    alert('加载零件数据失败，请刷新重试！');
                     ret = null;
                 }
             });
