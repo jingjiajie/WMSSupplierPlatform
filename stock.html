@@ -13,19 +13,17 @@
                                     <form class="form-inline">
                                         <label for="material-name">物料名称：</label>
                                         <input id="material-name" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
+                                        <label for="date">日期：</label>
+                                        <input id="time" class="form-control" placeholder="起始时间" />&nbsp;&nbsp;
                                         <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
-                                        <div onclick="supplierRemindStock(true)" class="btn btn-primary">查看库存提醒</div>&nbsp;&nbsp;
-                                        <div onclick="checkDeliverDetails()" class="btn btn-primary">查看出库详情</div>&nbsp;&nbsp;
-                                        <div onclick="checkReturnRecord()" class="btn btn-primary">查看退货原因记录</div>&nbsp;&nbsp;
-                                        <select id="month-scope" class="form-control">
-                                            <option value="1">查看全部</option>
-                                            <option value="0">只看本月</option>
-                                        </select>
                                     </form>
                                 </div>
                                 <div class="col-md-1">
                                     <a id="export" class="btn btn-primary">导出Excel</a>
                                 </div>
+                                <div onclick="supplierRemindStock(true)" class="btn btn-primary">查看库存提醒</div>&nbsp;&nbsp;
+                                <div onclick="checkDeliverDetails()" class="btn btn-primary">查看出库详情</div>&nbsp;&nbsp;
+                                <div onclick="checkReturnRecord()" class="btn btn-primary">查看退货原因记录</div>&nbsp;&nbsp;
                             </div>
                         </div>
                     </div>
