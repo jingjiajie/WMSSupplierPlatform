@@ -118,7 +118,7 @@
             var condition = {
                 conditions: conditions.concat(searchConditions)
             }
-            var url = SERVER_URL + '/warehouse/' + accountBook + '/return_stock/' + JSON.stringify(condition);
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/return_record/' + JSON.stringify(condition);
             var ret = null;
             $.ajax({
                 url: url,

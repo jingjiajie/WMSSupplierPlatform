@@ -5,7 +5,7 @@
                 <div class="card bg-light">
                     <div class="card-header">
                         <h3>供应商合同信息</h3>
-                        <div onclick="checkMateral()" class="btn btn-primary">查看零件</div>&nbsp;&nbsp;
+                        <div onclick="checkMateral()" class="btn btn-primary">查看零件</div>&nbsp;
                     </div>
                     <div class="card-body">
                         <table class="table table-striped table-bordered table-hover">
@@ -33,8 +33,8 @@
 </style>
 
 <script>
-function checkMateral(id) {
-        href="?column=material";
+    function checkMateral(id) {
+        href = "?column=material";
         window.open(href);
     }
 </script>
@@ -99,12 +99,12 @@ function checkMateral(id) {
         myDate.getMilliseconds();    //获取当前毫秒数(0-999)
         myDate.toLocaleDateString();     //获取当前日期
         var dateEnd = new Date(dateEndStr);
-        var dateRemine = (dateEnd - myDate)/(1000 * 60 * 60 * 24);
-        a=dateRemine;
-        if (dateRemine>0&dateRemine<=10) {
+        var dateRemine = (dateEnd - myDate) / (1000 * 60 * 60 * 24);
+        a = dateRemine;
+        if (dateRemine > 0 & dateRemine <= 10) {
             alert("您的合同已不足10天到期!");
         }
-        if(dateRemine<=0){
+        if (dateRemine <= 0) {
             alert("您的合同已过期!");
         }
 
