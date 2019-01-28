@@ -127,13 +127,11 @@
             fields: [
                 { name: 'materialNo', title: '物料代号', width: '130px' },
                 { name: 'materialName', title: '物料名称', width: '130px' },
-                { name: 'inventoryDate', title: '存货日期', width: '100px' },
-                { name: 'amount', title: '数量', width: '50px' },
-                { name: 'unit', title: '单位', width: '100px' },
+                { name: 'realStock', title: '实际库存', width: '50px' },
+                { name: 'amountDiff', title: '变化数量', width: '50px' },
+                { name: 'timestamp', title: '时间', width: '100px' },
                 { name: 'state', title: '检测状态' },
-                { name: 'storageLocationNo', title: '库位编码', width: '130px' },
-                { name: 'storageLocationName', title: '库位名称', width: '130px' },
-                { name: 'relatedOrderNo', title: '相关单号', width: '200px' }
+                { name: 'type', title: '类型', width: '130px' }
             ]
         });
     }
@@ -145,10 +143,10 @@
         var time = $('#time-input').val();
         body = {};
         if (materialName.length > 0) {
-            body['materialName'] =materialName;
+            body['materialName'] = materialName;
         }
         if (time.length > 0) {
-            body['time'] =time;
+            body['time'] = time;
         }
         console.log(body);
         this.loadData = function () {
@@ -177,6 +175,10 @@
             var STATE_NOT_INSPECTED = 0;
             var STATE_UNQUALIFIED = 1;
             var STATE_QUALIFIED = 2;
+            var AMOUNT_DIFF_ENTRY_STATE = 1;
+            var AMOUNT_DIFF_DELIVERY_STATE = 2;
+            var AMOUNT_PRIME = 0;
+            var AMOUNT_END = 3;
             for (var i = 0; i < data.length; i++) {
                 //映射检测状态
                 switch (data[i].state) {
@@ -190,89 +192,105 @@
                         data[i].state = '合格';
                         break;
                 }
-                //将存货日期保留到日
-                data[i].inventoryDate = new Date(data[i].inventoryDate.replace(/-/g, '/')).toLocaleDateString();
+                for (var i = 0; i < data.length; i++) {
+                    //映射显示类型
+                    switch (data[i].type) {
+                        case AMOUNT_PRIME:
+                            data[i].type = '起始数量';
+                            break;
+                        case AMOUNT_DIFF_ENTRY_STATE:
+                            data[i].type = '入库数量';
+                            break;
+                        case AMOUNT_DIFF_DELIVERY_STATE:
+                            data[i].type = '出库数量';
+                            break;
+                        case AMOUNT_END:
+                            data[i].type = '截止数量';
+                            break;
+                    }
+                    //将存货日期保留到日
+                    data[i].timestamp = new Date(data[i].timestamp.replace(/-/g, '/')).toLocaleDateString();
+                }
             }
         }
-    }
 
-    //base64转码
-    var base64 = function (s) {
-        return window.btoa(unescape(encodeURIComponent(s)));
-    };
-    //替换table数据和worksheet名字
-    var format = function (s, c) {
-        return s.replace(/{(\w+)}/g,
-            function (m, p) {
-                return c[p];
-            });
-    }
-    function initExport(tableid, sheetName) {
-        var uri = 'data:application/vnd.ms-excel;base64,';
-        var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"' +
-            'xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'
-            + '<x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets>'
-            + '</x:ExcelWorkbook></xml><![endif]-->' +
-            ' <style type="text/css">' +
-            'table td {' +
-            'width: 200px;' +
-            'height: 30px;' +
-            ' text-align: center;' +
-            ' }' +
-            '</style>' +
-            '</head><body ><table class="excelTable">{table}</table></body></html>';
-        if (!tableid.nodeType) tableid = document.getElementById(tableid);
-        var ctx = { worksheet: sheetName || 'Worksheet', table: tableid.innerHTML };
-        document.getElementById("export").href = uri + base64(format(template, ctx));
-    }
+        //base64转码
+        var base64 = function (s) {
+            return window.btoa(unescape(encodeURIComponent(s)));
+        };
+        //替换table数据和worksheet名字
+        var format = function (s, c) {
+            return s.replace(/{(\w+)}/g,
+                function (m, p) {
+                    return c[p];
+                });
+        }
+        function initExport(tableid, sheetName) {
+            var uri = 'data:application/vnd.ms-excel;base64,';
+            var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"' +
+                'xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'
+                + '<x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets>'
+                + '</x:ExcelWorkbook></xml><![endif]-->' +
+                ' <style type="text/css">' +
+                'table td {' +
+                'width: 200px;' +
+                'height: 30px;' +
+                ' text-align: center;' +
+                ' }' +
+                '</style>' +
+                '</head><body ><table class="excelTable">{table}</table></body></html>';
+            if (!tableid.nodeType) tableid = document.getElementById(tableid);
+            var ctx = { worksheet: sheetName || 'Worksheet', table: tableid.innerHTML };
+            document.getElementById("export").href = uri + base64(format(template, ctx));
+        }
 
-    supplierRemindStock(false);
+        supplierRemindStock(false);
 
-    function supplierRemindStock(remindNull) {
-        var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/remind/{' + 1 + "}";
-        $.get(encodeURI(url, "UTF-8"),
-            function (data, status) {
-                if (status != 'success') {
-                    alert('连接失败，请重试！');
-                    return;
-                }
-                var supplierRemind = data;
-                var sb = new StringBuilder("");
-                if (supplierRemind.length != 0) {
-                    //物料 数量 需求数量
-                    for (var i = 0; i < data.length; i++) {
-                        var materialName = data[i].materialName;
-                        var amount = data[i].amount;
-                        var amountNeed = data[i].amountNeed;
-                        if (amount < amountNeed) {
-                            sb.append("物料：");
-                            sb.append(materialName);
-                            sb.append("现有合格品数量：");
-                            sb.append(amount);
-                            sb.append("已经小于供货安全库存：");
-                            sb.append(amountNeed);
-                            sb.append("，请及时供货！");
-                            sb.append("\n");
-                            sb.append("\n");
+        function supplierRemindStock(remindNull) {
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/remind/{' + 1 + "}";
+            $.get(encodeURI(url, "UTF-8"),
+                function (data, status) {
+                    if (status != 'success') {
+                        alert('连接失败，请重试！');
+                        return;
+                    }
+                    var supplierRemind = data;
+                    var sb = new StringBuilder("");
+                    if (supplierRemind.length != 0) {
+                        //物料 数量 需求数量
+                        for (var i = 0; i < data.length; i++) {
+                            var materialName = data[i].materialName;
+                            var amount = data[i].amount;
+                            var amountNeed = data[i].amountNeed;
+                            if (amount < amountNeed) {
+                                sb.append("物料：");
+                                sb.append(materialName);
+                                sb.append("现有合格品数量：");
+                                sb.append(amount);
+                                sb.append("已经小于供货安全库存：");
+                                sb.append(amountNeed);
+                                sb.append("，请及时供货！");
+                                sb.append("\n");
+                                sb.append("\n");
+                            }
                         }
                     }
-                }
-                if (sb != "") {
-                    alert(sb);
-                }
-                else if (sb == "" && remindNull == true) {
-                    alert("您的库存充足！");
-                }
-            }).error(
-                function (jqXHR, status, err) {
-                    alert('连接失败，请重试！');
-                    return;
-                }
-            );
-    }
+                    if (sb != "") {
+                        alert(sb);
+                    }
+                    else if (sb == "" && remindNull == true) {
+                        alert("您的库存充足！");
+                    }
+                }).error(
+                    function (jqXHR, status, err) {
+                        alert('连接失败，请重试！');
+                        return;
+                    }
+                );
+        }
 </script>
 
 <script>
-    initTableStock();
-    initExport('table-stock', '库存数据');
+        initTableStock();
+        initExport('table-stock', '库存数据');
 </script>
