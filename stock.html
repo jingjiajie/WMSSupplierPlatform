@@ -14,7 +14,7 @@
                                         <label for="material-name">物料名称：</label>
                                         <input id="material-name" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
                                         <label for="date">日期：</label>
-                                        <input id="time" class="form-control" placeholder="起始时间" />&nbsp;&nbsp;
+                                        <input id="time-input" class="form-control" placeholder="日期" />&nbsp;&nbsp;
                                         <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
                                     </form>
                                 </div>
@@ -75,16 +75,16 @@
 
 <script>
     function checkReturnRecord() {
-            href="?column=return";
-            window.open(href);
-        }
+        href = "?column=return";
+        window.open(href);
+    }
 </script>
 
 <script>
     function checkDeliverDetails() {
-            href="?column=deliverDetails";
-            window.open(href);
-        }
+        href = "?column=deliverDetails";
+        window.open(href);
+    }
 </script>
 
 <script>
@@ -109,33 +109,16 @@
     var searchConditions = []; //搜索时附加的搜索条件
 
     function searchClicked() {
-        var materialName = $('#material-name').val();
-        var monthScope = $('#month-scope option:selected').val();
-        searchConditions = [];
-        if (materialName.length > 0) {
-            searchConditions = [
-                { key: 'materialName', values: [materialName], relation: "CONTAINS" }
-            ];
-        }
-        var monthFirstDate = new Date(); //当月第一天
-        monthFirstDate.setDate(1);
-        monthFirstDate.setHours(0);
-        monthFirstDate.setMinutes(0);
-        monthFirstDate.setSeconds(0);
-        if (monthScope == 0) {
-            searchConditions.push({ key: 'inventoryDate', values: [monthFirstDate.format('yyyy-MM-dd hh:mm:ss')], relation: 'GREATER_THAN_OR_EQUAL_TO' })
-        }
-        $("#table-stock").jsGrid("search");
+        //$("#table-stock").jsGrid("search")
+        initTableStock();
     }
 
     function initTableStock() {
         $("#table-stock").jsGrid({
             width: "100%",
             height: "100%",
-
             autoload: true,
             controller: new StockController(),
-
             inserting: true,
             editing: true,
             sorting: true,
@@ -150,41 +133,40 @@
                 { name: 'state', title: '检测状态' },
                 { name: 'storageLocationNo', title: '库位编码', width: '130px' },
                 { name: 'storageLocationName', title: '库位名称', width: '130px' },
-                { name: 'relatedOrderNo', title: '相关单号', width: '200px' },
-                // { name: 'batchNo', title: '批次号' }
-                // { name: 'manufactureDate', title: '生产日期', width: '130px' },
-                // { name: 'expiryDate', title: '失效日期', width: '130px' }
-
+                { name: 'relatedOrderNo', title: '相关单号', width: '200px' }
             ]
         });
     }
 
     function StockController() {
         var strSupplier = sessionStorage.getItem('supplier');
-        var strWarehouse = sessionStorage.getItem('warehouse');
         var supplier = JSON.parse(strSupplier);
-        var warehouse = JSON.parse(strWarehouse);
-        var conditions = [
-            { key: 'supplierId', values: [supplier['id']] },
-            { key: 'warehouseId', values: [warehouse['id']] },
-            { key: 'amount', values: [0], relation: 'GREATER_THAN' }
-        ];
-
+        var materialName = $('#material-name').val();
+        var time = $('#time-input').val();
+        body = {};
+        if (materialName.length > 0) {
+            body['materialName'] =materialName;
+        }
+        if (time.length > 0) {
+            body['time'] =time;
+        }
+        console.log(body);
         this.loadData = function () {
-            var condition = {
-                conditions: conditions.concat(searchConditions)
-            }
-            var url = SERVER_URL + '/warehouse/' + accountBook + '/stock_record/find_newest/' + JSON.stringify(condition);
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/generate_daily_reports';
             var ret = null;
+            var bodyJson = JSON.stringify(body);
             $.ajax({
+                type: 'POST',
                 url: url,
                 async: false,
+                data: bodyJson,
+                contentType: 'application/json; charset=utf-8',
                 success: function (data) {
                     handleStockData(data);
                     ret = data;
                 },
                 error: function () {
-                    alert('加载库存数据失败，请刷新重试！');
+                    alert('加载出入库及库存数据失败，请刷新重试！');
                     ret = null;
                 }
             });
@@ -196,13 +178,6 @@
             var STATE_UNQUALIFIED = 1;
             var STATE_QUALIFIED = 2;
             for (var i = 0; i < data.length; i++) {
-                //var dividedAmount = data[i].amount / data[i].unitAmount; //除以单位数量之后的数量
-                //var unitStr = data[i].unit;
-                //if (data[i].unitAmount != 1) {
-                //    unitStr += '(x' + data[i].unitAmount + ')';
-               // }
-               // data[i].amount = dividedAmount;
-                //data[i].unit = unitStr;
                 //映射检测状态
                 switch (data[i].state) {
                     case STATE_NOT_INSPECTED:
@@ -282,11 +257,10 @@
                         }
                     }
                 }
-                if(sb!="")
-                {
-                alert(sb);
+                if (sb != "") {
+                    alert(sb);
                 }
-                else if(sb==""&&remindNull==true){
+                else if (sb == "" && remindNull == true) {
                     alert("您的库存充足！");
                 }
             }).error(
