@@ -128,10 +128,10 @@
                 { name: 'materialNo', title: '物料代号', width: '130px' },
                 { name: 'materialName', title: '物料名称', width: '130px' },
                 { name: 'realStock', title: '实际库存', width: '50px' },
+                { name: 'type', title: '类型', width: '130px' },
                 { name: 'amountDiff', title: '变化数量', width: '50px' },
                 { name: 'timestamp', title: '时间', width: '100px' },
-                { name: 'state', title: '检测状态' },
-                { name: 'type', title: '类型', width: '130px' }
+                { name: 'state', title: '检测状态' }
             ]
         });
     }
@@ -197,15 +197,19 @@
                     switch (data[i].type) {
                         case AMOUNT_PRIME:
                             data[i].type = '起始数量';
+                            data[i].amountDiff = '无';
                             break;
                         case AMOUNT_DIFF_ENTRY_STATE:
-                            data[i].type = '入库数量';
+                            data[i].type = '入库';
+                            data[i].amount = '无';
                             break;
                         case AMOUNT_DIFF_DELIVERY_STATE:
-                            data[i].type = '出库数量';
+                            data[i].type = '出库';
+                            data[i].amount = '无';
                             break;
                         case AMOUNT_END:
                             data[i].type = '截止数量';
+                            data[i].amountDiff = '无';
                             break;
                     }
                     //将存货日期保留到日

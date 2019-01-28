@@ -11,7 +11,7 @@
                                 </div>
                                 <div class="col-md-9">
                                     <form class="form-inline">
-                                        <label for="material-name">日期：</label>
+                                        <label for="date">日期：</label>
                                         <input id="material-name" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
                                         <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
                                     </form>
@@ -72,8 +72,25 @@
 <script>
     var searchConditions = []; //搜索时附加的搜索条件
     function searchClicked() {
-        var materialName = $('#material-name').val();
-        searchConditions = { key: 'materialName', values: [materialName], relation: "CONTAINS" };
+        var dateStr = $('#date').val();
+        var date;
+        if (dateStr.length != 0) {
+            date = new Date(dateStr);
+        }
+        else {
+            date = new Date();
+        }
+        var dateStart = date;
+        var dateEnd = date;
+        dateStart.setHours(0);
+        dateStart.setMinutes(0);
+        dateStart.setSeconds(0);
+        dateStart.setMilliseconds(0);
+        dateEnd.setHours(23);
+        dateEnd.setMinutes(59);
+        dateEnd.setSeconds(59);
+        dateEnd.setMilliseconds(999);
+        searchConditions = { key: 'deliveryItemCreatTime', values: [dateStart, dateEnd], relation: "BETWEEN" };
         console.log(searchConditions);
         $("#table-stock").jsGrid("search");
     }
@@ -91,7 +108,7 @@
             sorting: true,
             paging: false,
 
-            fields: [   
+            fields: [
                 { name: 'supplierName', title: '供应商名称', width: '130px' },
                 { name: 'materialNo', title: '物料代号', width: '130px' },
                 { name: 'materialName', title: '物料名称', width: '130px' },
@@ -107,11 +124,11 @@
         var supplier = JSON.parse(strSupplier);
         var warehouse = JSON.parse(strWarehouse);
         var conditions = [
-            { key: 'supplierId',values:[supplier['id']]}
+            { key: 'supplierId', values: [supplier['id']] }
         ];
         var condition = {
-                conditions: conditions.concat(searchConditions)
-            };
+            conditions: conditions.concat(searchConditions)
+        };
         this.loadData = function () {
             var condition = {
                 conditions: conditions.concat(searchConditions)
@@ -126,7 +143,7 @@
                     ret = data;
                 },
                 error: function () {
-                    alert('加载出库数据失败，请刷新重试！');
+                    alert('加载出库数据失败，请检查输入日期格式是否正确！');
                     ret = null;
                 }
             });
