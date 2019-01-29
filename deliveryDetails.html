@@ -12,7 +12,7 @@
                                 <div class="col-md-9">
                                     <form class="form-inline">
                                         <label for="date">日期：</label>
-                                        <input id="material-name" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
+                                        <input id="date" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
                                         <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
                                     </form>
                                 </div>
@@ -72,27 +72,8 @@
 <script>
     var searchConditions = []; //搜索时附加的搜索条件
     function searchClicked() {
-        var dateStr = $('#date').val();
-        var date;
-        if (dateStr.length != 0) {
-            date = new Date(dateStr);
-        }
-        else {
-            date = new Date();
-        }
-        var dateStart = date;
-        var dateEnd = date;
-        dateStart.setHours(0);
-        dateStart.setMinutes(0);
-        dateStart.setSeconds(0);
-        dateStart.setMilliseconds(0);
-        dateEnd.setHours(23);
-        dateEnd.setMinutes(59);
-        dateEnd.setSeconds(59);
-        dateEnd.setMilliseconds(999);
-        searchConditions = { key: 'deliveryItemCreatTime', values: [dateStart, dateEnd], relation: "BETWEEN" };
-        console.log(searchConditions);
-        $("#table-stock").jsGrid("search");
+        initTableStock();
+        //$("#table-stock").jsGrid("search");
     }
 
     function initTableStock() {
@@ -126,14 +107,37 @@
         var conditions = [
             { key: 'supplierId', values: [supplier['id']] }
         ];
+        var dateStr = $('#date').val();
+        var dateStart;
+        var dateEnd;
+        if (dateStr.length>0) {
+            dateStart = new Date(dateStr);
+            dateEnd = new Date(dateStr);
+        }
+        else {
+            dateStart = new Date();
+            dateEnd = new Date();
+        }
+        dateStart.setHours(8);
+        dateStart.setMinutes(0);
+        dateStart.setSeconds(0);
+        dateStart.setMilliseconds(0);
+        dateEnd.setHours(7);
+        dateEnd.setMinutes(59);
+        dateEnd.setSeconds(59);
+        dateEnd.setMilliseconds(999);
+        console.log(dateStart);
+        console.log(dateEnd);
+        searchConditions = { key: 'deliveryOrderItemCreatTime', values: [dateStart, dateEnd], relation: "BETWEEN" };
         var condition = {
             conditions: conditions.concat(searchConditions)
         };
+        console.log(searchConditions);
         this.loadData = function () {
             var condition = {
                 conditions: conditions.concat(searchConditions)
             }
-            var url = SERVER_URL + '/warehouse/' + accountBook + '/delivery_order/' + JSON.stringify(condition);
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/delivery_order_item/' + JSON.stringify(condition);
             var ret = null;
             $.ajax({
                 url: url,
