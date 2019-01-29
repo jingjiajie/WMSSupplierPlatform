@@ -7,7 +7,7 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-2">
-                                    <h3>详情查询</h3>
+                                    <h3>出库详情查询</h3>
                                 </div>
                                 <div class="col-md-9">
                                     <form class="form-inline">
@@ -93,7 +93,8 @@
                 { name: 'supplierName', title: '供应商名称', width: '130px' },
                 { name: 'materialNo', title: '物料代号', width: '130px' },
                 { name: 'materialName', title: '物料名称', width: '130px' },
-                { name: 'materialProductLine', title: '系列', width: '130px' }
+                { name: 'materialProductLine', title: '系列', width: '130px' },
+                { name: 'deliveryOrderItemCreatTime', title: '创建时间', width: '130px' }
 
             ]
         });
@@ -104,44 +105,22 @@
         var strWarehouse = sessionStorage.getItem('warehouse');
         var supplier = JSON.parse(strSupplier);
         var warehouse = JSON.parse(strWarehouse);
-        var conditions = [
-            { key: 'supplierId', values: [supplier['id']] }
-        ];
         var dateStr = $('#date').val();
-        var dateStart;
-        var dateEnd;
-        if (dateStr.length>0) {
-            dateStart = new Date(dateStr);
-            dateEnd = new Date(dateStr);
+        var body={};
+        body['supplierId'] = supplier['id'];
+        if (dateStr.length > 0) {
+            body['time'] = dateStr;
         }
-        else {
-            dateStart = new Date();
-            dateEnd = new Date();
-        }
-        dateStart.setHours(8);
-        dateStart.setMinutes(0);
-        dateStart.setSeconds(0);
-        dateStart.setMilliseconds(0);
-        dateEnd.setHours(7);
-        dateEnd.setMinutes(59);
-        dateEnd.setSeconds(59);
-        dateEnd.setMilliseconds(999);
-        console.log(dateStart);
-        console.log(dateEnd);
-        searchConditions = { key: 'deliveryOrderItemCreatTime', values: [dateStart, dateEnd], relation: "BETWEEN" };
-        var condition = {
-            conditions: conditions.concat(searchConditions)
-        };
-        console.log(searchConditions);
         this.loadData = function () {
-            var condition = {
-                conditions: conditions.concat(searchConditions)
-            }
-            var url = SERVER_URL + '/warehouse/' + accountBook + '/delivery_order_item/' + JSON.stringify(condition);
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/check_delivery';
             var ret = null;
+            var bodyJson = JSON.stringify(body);
             $.ajax({
+                type:'POST',
                 url: url,
                 async: false,
+                data: bodyJson,
+                contentType: 'application/json; charset=utf-8',
                 success: function (data) {
                     handleMaterialData(data);
                     ret = data;

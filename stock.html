@@ -149,7 +149,6 @@
         if (time.length > 0) {
             body['time'] = time;
         }
-        console.log(body);
         this.loadData = function () {
             var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/generate_daily_reports';
             var ret = null;
