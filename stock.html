@@ -14,7 +14,7 @@
                                         <label for="material-name">物料名称：</label>
                                         <input id="material-name" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
                                         <label for="date">日期：</label>
-                                        <input id="time-input" class="form-control" placeholder="年-月-日(默认当前日期)" />&nbsp;&nbsp;
+                                        <input id="time-input" class="form-control" placeholder="年-月-日(默认当日)" />&nbsp;&nbsp;
                                         <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
                                     </form>
                                 </div>
@@ -22,7 +22,7 @@
                                     <a id="export" class="btn btn-primary">导出Excel</a>
                                 </div>
                                 <div onclick="supplierRemindStock(true)" class="btn btn-primary">查看库存提醒</div>&nbsp;&nbsp;
-                                <div onclick="checkDeliverDetails()" class="btn btn-primary">查看出库详情</div>&nbsp;&nbsp;
+                                <div id="delivery" onclick="checkDeliverDetails()" class="btn btn-primary">查看出库详情</div>&nbsp;&nbsp;
                                 <div onclick="checkReturnRecord()" class="btn btn-primary">查看退货原因记录</div>&nbsp;&nbsp;
                             </div>
                         </div>
@@ -72,6 +72,10 @@
 </style>
 <!-- 
 <script src="./js/table2excel.js"></script> -->
+<script>
+//$("#delivery").attr("style","display:none;")
+//$("#delivery").hide();
+</script>
 
 <script>
     function checkReturnRecord() {
@@ -131,7 +135,7 @@
                 { name: 'type', title: '类型', width: '60px' },
                 { name: 'amountDiff', title: '变化数量', width: '50px' },
                 { name: 'timestamp', title: '时间', width: '50px' },
-                { name: 'state', title: '检测状态' , width: '50px'}
+                { name: 'state', title: '检测状态', width: '50px' }
             ]
         });
     }
@@ -172,130 +176,131 @@
         }
     }
 
-        function handleStockData(data) {
-            var STATE_NOT_INSPECTED = 0;
-            var STATE_UNQUALIFIED = 1;
-            var STATE_QUALIFIED = 2;
-            var AMOUNT_DIFF_ENTRY_STATE = 1;
-            var AMOUNT_DIFF_DELIVERY_STATE = 2;
-            var AMOUNT_PRIME = 0;
-            var AMOUNT_END = 3;
-            for (var i = 0; i < data.length; i++) {
-                //映射检测状态
-                switch (data[i].state) {
-                    case STATE_NOT_INSPECTED:
-                        data[i].state = '检测中';
-                        break;
-                    case STATE_UNQUALIFIED:
-                        data[i].state = '不合格';
-                        break;
-                    case STATE_QUALIFIED:
-                        data[i].state = '合格';
-                        break;
-                }
-                    //映射显示类型
-                    switch (data[i].type) {
-                        case AMOUNT_PRIME:
-                            data[i].type = '当日起始数量';
-                            data[i].amountDiff = '无';
-                            break;
-                        case AMOUNT_DIFF_ENTRY_STATE:
-                            data[i].type = '入库';
-                            data[i].amount = '无';
-                            data[i].state = '无';
-                            break;
-                        case AMOUNT_DIFF_DELIVERY_STATE:
-                            data[i].type = '出库';
-                            data[i].amount = '无';
-                            data[i].state = '无';
-                            break;
-                        case AMOUNT_END:
-                            data[i].type = '当日截止数量';
-                            data[i].amountDiff = '无';
-                            break;
-                }
-                //将存货日期保留到日
-                data[i].timestamp = new Date(data[i].timestamp.replace(/-/g, '/')).toLocaleDateString();
+    function handleStockData(data) {
+        var STATE_NOT_INSPECTED = 0;
+        var STATE_UNQUALIFIED = 1;
+        var STATE_QUALIFIED = 2;
+        var AMOUNT_DIFF_ENTRY_STATE = 1;
+        var AMOUNT_DIFF_DELIVERY_STATE = 2;
+        var AMOUNT_PRIME = 0;
+        var AMOUNT_END = 3;
+        for (var i = 0; i < data.length; i++) {
+            //映射检测状态
+            switch (data[i].state) {
+                case STATE_NOT_INSPECTED:
+                    data[i].state = '检测中';
+                    break;
+                case STATE_UNQUALIFIED:
+                    data[i].state = '不合格';
+                    break;
+                case STATE_QUALIFIED:
+                    data[i].state = '合格';
+                    break;
             }
+            //映射显示类型
+            switch (data[i].type) {
+                case AMOUNT_PRIME:
+                    data[i].type = '当日起始数量';
+                    data[i].amountDiff = '无';
+                    break;
+                case AMOUNT_DIFF_ENTRY_STATE:
+                    data[i].type = '入库';
+                    data[i].amount = '无';
+                    data[i].state = '无';
+                    break;
+                case AMOUNT_DIFF_DELIVERY_STATE:
+                    data[i].type = '出库';
+                    data[i].amount = '无';
+                    data[i].state = '无';
+                    break;
+                case AMOUNT_END:
+                    data[i].type = '当日截止数量';
+                    data[i].amountDiff = '无';
+                    break;
+            }
+            //将存货日期保留到日
+            data[i].timestamp =/\d{4}-\d{1,2}-\d{1,2}/g.exec(data[i].timestamp) 
+            //new Date(data[i].timestamp.replace(/-/g, '/')).toLocaleDateString();
         }
+    }
 
-        //base64转码
-        var base64 = function (s) {
-            return window.btoa(unescape(encodeURIComponent(s)));
-        };
-        //替换table数据和worksheet名字
-        var format = function (s, c) {
-            return s.replace(/{(\w+)}/g,
-                function (m, p) {
-                    return c[p];
-                });
-        }
-        function initExport(tableid, sheetName) {
-            var uri = 'data:application/vnd.ms-excel;base64,';
-            var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"' +
-                'xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'
-                + '<x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets>'
-                + '</x:ExcelWorkbook></xml><![endif]-->' +
-                ' <style type="text/css">' +
-                'table td {' +
-                'width: 200px;' +
-                'height: 30px;' +
-                ' text-align: center;' +
-                ' }' +
-                '</style>' +
-                '</head><body ><table class="excelTable">{table}</table></body></html>';
-            if (!tableid.nodeType) tableid = document.getElementById(tableid);
-            var ctx = { worksheet: sheetName || 'Worksheet', table: tableid.innerHTML };
-            document.getElementById("export").href = uri + base64(format(template, ctx));
-        }
+    //base64转码
+    var base64 = function (s) {
+        return window.btoa(unescape(encodeURIComponent(s)));
+    };
+    //替换table数据和worksheet名字
+    var format = function (s, c) {
+        return s.replace(/{(\w+)}/g,
+            function (m, p) {
+                return c[p];
+            });
+    }
+    function initExport(tableid, sheetName) {
+        var uri = 'data:application/vnd.ms-excel;base64,';
+        var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"' +
+            'xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'
+            + '<x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets>'
+            + '</x:ExcelWorkbook></xml><![endif]-->' +
+            ' <style type="text/css">' +
+            'table td {' +
+            'width: 200px;' +
+            'height: 30px;' +
+            ' text-align: center;' +
+            ' }' +
+            '</style>' +
+            '</head><body ><table class="excelTable">{table}</table></body></html>';
+        if (!tableid.nodeType) tableid = document.getElementById(tableid);
+        var ctx = { worksheet: sheetName || 'Worksheet', table: tableid.innerHTML };
+        document.getElementById("export").href = uri + base64(format(template, ctx));
+    }
 
-        supplierRemindStock(false);
+    supplierRemindStock(false);
 
-        function supplierRemindStock(remindNull) {
-            var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/remind/{' + 1 + "}";
-            $.get(encodeURI(url, "UTF-8"),
-                function (data, status) {
-                    if (status != 'success') {
-                        alert('连接失败，请重试！');
-                        return;
-                    }
-                    var supplierRemind = data;
-                    var sb = new StringBuilder("");
-                    if (supplierRemind.length != 0) {
-                        //物料 数量 需求数量
-                        for (var i = 0; i < data.length; i++) {
-                            var materialName = data[i].materialName;
-                            var amount = data[i].amount;
-                            var amountNeed = data[i].amountNeed;
-                            if (amount < amountNeed) {
-                                sb.append("物料：");
-                                sb.append(materialName);
-                                sb.append("现有合格品数量：");
-                                sb.append(amount);
-                                sb.append("已经小于供货安全库存：");
-                                sb.append(amountNeed);
-                                sb.append("，请及时供货！");
-                                sb.append("\n");
-                                sb.append("\n");
-                            }
+    function supplierRemindStock(remindNull) {
+        var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/remind/{' + 1 + "}";
+        $.get(encodeURI(url, "UTF-8"),
+            function (data, status) {
+                if (status != 'success') {
+                    alert('连接失败，请重试！');
+                    return;
+                }
+                var supplierRemind = data;
+                var sb = new StringBuilder("");
+                if (supplierRemind.length != 0) {
+                    //物料 数量 需求数量
+                    for (var i = 0; i < data.length; i++) {
+                        var materialName = data[i].materialName;
+                        var amount = data[i].amount;
+                        var amountNeed = data[i].amountNeed;
+                        if (amount < amountNeed) {
+                            sb.append("物料：");
+                            sb.append(materialName);
+                            sb.append("现有合格品数量：");
+                            sb.append(amount);
+                            sb.append("已经小于供货安全库存：");
+                            sb.append(amountNeed);
+                            sb.append("，请及时供货！");
+                            sb.append("\n");
+                            sb.append("\n");
                         }
                     }
-                    if (sb != "") {
-                        alert(sb);
-                    }
-                    else if (sb == "" && remindNull == true) {
-                        alert("您的库存充足！");
-                    }
-                }).error(
-                    function (jqXHR, status, err) {
-                        alert('连接失败，请重试！');
-                        return;
-                    }
-                );
-        }
+                }
+                if (sb != "") {
+                    alert(sb);
+                }
+                else if (sb == "" && remindNull == true) {
+                    alert("您的库存充足！");
+                }
+            }).error(
+                function (jqXHR, status, err) {
+                    alert('连接失败，请重试！');
+                    return;
+                }
+            );
+    }
 </script>
 
 <script>
-        initTableStock();
-        initExport('table-stock', '库存数据');
+    initTableStock();
+    initExport('table-stock', '库存数据');
 </script>
