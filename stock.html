@@ -73,8 +73,13 @@
 <!-- 
 <script src="./js/table2excel.js"></script> -->
 <script>
-//$("#delivery").attr("style","display:none;")
-//$("#delivery").hide();
+    //$("#delivery").attr("style","display:none;")
+    var strSupplier = sessionStorage.getItem('supplier');
+    var supplier = JSON.parse(strSupplier);
+    var supplierPassward=supplier['supplierPassward'];
+    if (supplierPassward.indexOf('chuku') == -1) {
+        $("#delivery").hide();
+    }
 </script>
 
 <script>
@@ -219,7 +224,7 @@
                     break;
             }
             //将存货日期保留到日
-            data[i].timestamp =/\d{4}-\d{1,2}-\d{1,2}/g.exec(data[i].timestamp) 
+            data[i].timestamp = /\d{4}-\d{1,2}-\d{1,2}/g.exec(data[i].timestamp)
             //new Date(data[i].timestamp.replace(/-/g, '/')).toLocaleDateString();
         }
     }
