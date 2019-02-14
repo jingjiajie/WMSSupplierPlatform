@@ -72,14 +72,24 @@
 <script>
     var searchConditions = []; //搜索时附加的搜索条件
     function searchClicked() {
-        initTableStock();
-        //$("#table-stock").jsGrid("search");
+        //initTableStock();
+        var strSupplier = sessionStorage.getItem('supplier');
+        var strWarehouse = sessionStorage.getItem('warehouse');
+        var supplier = JSON.parse(strSupplier);
+        var warehouse = JSON.parse(strWarehouse);
+        var dateStr = $('#date').val();
+        var body={};
+        body['supplierId'] = supplier['id'];
+        if (dateStr.length > 0) {
+            body['time'] = dateStr;
+        }
+        $("#table-stock").jsGrid("search");
     }
 
     function initTableStock() {
         $("#table-stock").jsGrid({
             width: "100%",
-            height: "100%",
+            height: "90%",
 
             autoload: true,
             controller: new MaterialController(),
@@ -87,7 +97,8 @@
             inserting: true,
             editing: true,
             sorting: true,
-            paging: false,
+            paging: true,
+            pageSize:100,
 
             fields: [
                 { name: 'supplierName', title: '供应商名称', width: '130px' },
@@ -99,18 +110,9 @@
             ]
         });
     }
+    
 
     function MaterialController() {
-        var strSupplier = sessionStorage.getItem('supplier');
-        var strWarehouse = sessionStorage.getItem('warehouse');
-        var supplier = JSON.parse(strSupplier);
-        var warehouse = JSON.parse(strWarehouse);
-        var dateStr = $('#date').val();
-        var body={};
-        body['supplierId'] = supplier['id'];
-        if (dateStr.length > 0) {
-            body['time'] = dateStr;
-        }
         this.loadData = function () {
             var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/check_delivery';
             var ret = null;
@@ -138,6 +140,8 @@
             }
         }
     }
+
+    searchClicked();
 
     //base64转码
     var base64 = function (s) {

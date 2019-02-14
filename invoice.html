@@ -93,7 +93,7 @@
 
         $("#table-settlement").jsGrid({
             width: "100%",
-            height: "100%",
+            height: "90%",
             autoload: true,
             controller: new SettementController(),
 
@@ -101,7 +101,8 @@
             inserting: true,
             editing: true,
             sorting: true,
-            paging: false,
+            paging: true,
+            pageSize:100,
 
             fields: [
                 { name: 'supplierNo', title: '供应商代号', width: '130px' },

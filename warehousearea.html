@@ -89,7 +89,7 @@
     function initTableStock() {
         $("#table-stock").jsGrid({
             width: "100%",
-            height: "100%",
+            height: "90%",
 
             autoload: true,
             controller: new StockController(),
@@ -97,7 +97,8 @@
             inserting: true,
             editing: true,
             sorting: true,
-            paging: false,
+            paging: true,
+            pageSize:100,
 
             fields: [
                 { name: 'totalArea', title: '总面积', width: '130px' },
