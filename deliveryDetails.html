@@ -71,6 +71,7 @@
 
 <script>
     var searchConditions = []; //搜索时附加的搜索条件
+    var body={};
     function searchClicked() {
         //initTableStock();
         var strSupplier = sessionStorage.getItem('supplier');
@@ -78,7 +79,6 @@
         var supplier = JSON.parse(strSupplier);
         var warehouse = JSON.parse(strWarehouse);
         var dateStr = $('#date').val();
-        var body={};
         body['supplierId'] = supplier['id'];
         if (dateStr.length > 0) {
             body['time'] = dateStr;
@@ -90,10 +90,8 @@
         $("#table-stock").jsGrid({
             width: "100%",
             height: "90%",
-
             autoload: true,
             controller: new MaterialController(),
-
             inserting: true,
             editing: true,
             sorting: true,
