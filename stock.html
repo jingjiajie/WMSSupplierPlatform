@@ -152,7 +152,8 @@
 
 
             fields: [
-                //{ name: 'materialNo', title: '物料代号', width: '30px' },
+                { name: 'materialNo', title: '物料代号', width: '30px' },
+                { name: 'supplyId', title: 'supplyId', width: '30px' },
                 { name: 'materialName', title: '物料名称', width: '30px' },
                 //{ name: 'materialProdtct', title: '物料系列', width: '30px' },
                 { name: 'type', title: '类型', width: '20px' },
@@ -219,13 +220,11 @@
                     data[i].type = '入库';
                     data[i].amount = '无';
                     data[i].amountDiff='+'+data[i].amountDiff;
-                    data[i].state = '合格';
                     break;
                 case AMOUNT_DIFF_DELIVERY_STATE:
                     data[i].type = '出库';
                     data[i].amount = '无';
                     data[i].amountDiff='-'+data[i].amountDiff;
-                    data[i].state = '无';
                     break;
                 case AMOUNT_END:
                     data[i].type = '截止数量';
