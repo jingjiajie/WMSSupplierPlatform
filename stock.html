@@ -73,6 +73,10 @@
 <!-- 
 <script src="./js/table2excel.js"></script> -->
 <script>
+ //$("#time-input").val('2019-2-15');
+</script>
+
+<script>
     //$("#delivery").attr("style","display:none;")
     var strSupplier = sessionStorage.getItem('supplier');
     var supplier = JSON.parse(strSupplier);
@@ -215,7 +219,7 @@
                     data[i].type = '入库';
                     data[i].amount = '无';
                     data[i].amountDiff='+'+data[i].amountDiff;
-                    data[i].state = '无';
+                    data[i].state = '合格';
                     break;
                 case AMOUNT_DIFF_DELIVERY_STATE:
                     data[i].type = '出库';
@@ -232,7 +236,7 @@
             data[i].timestamp = /\d{4}-\d{1,2}-\d{1,2}/g.exec(data[i].timestamp)
             //new Date(data[i].timestamp.replace(/-/g, '/')).toLocaleDateString();
         }
-        console.log(data);
+        //console.log(data);
     }
 
     //base64转码
