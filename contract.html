@@ -6,6 +6,7 @@
                     <div class="card-header">
                         <h3>供应商合同信息</h3>
                         <div onclick="checkMateral()" class="btn btn-primary">查看零件</div>&nbsp;
+                        <div onclick="checkContractRemind()" class="btn btn-primary">查看合同提醒</div>&nbsp;
                     </div>
                     <div class="card-body">
                         <table class="table table-striped table-bordered table-hover">
@@ -36,6 +37,9 @@
     function checkMateral(id) {
         href = "?column=material";
         window.open(href);
+    }
+    function checkContractRemind() {
+        supplierRemindContract();
     }
 </script>
 
