@@ -153,13 +153,13 @@
 
             fields: [
                 { name: 'materialNo', title: '物料代号', width: '30px' },
-                { name: 'supplyId', title: 'supplyId', width: '30px' },
+                //{ name: 'supplyId', title: 'supplyId', width: '30px' },
                 { name: 'materialName', title: '物料名称', width: '30px' },
-                //{ name: 'materialProdtct', title: '物料系列', width: '30px' },
+                { name: 'materialProductLine', title: '物料系列', width: '30px' },
                 { name: 'type', title: '类型', width: '20px' },
                 { name: 'state', title: '检测状态', width: '20px' },
-                { name: 'realStock', title: '实际库存', width: '20px'},
-                { name: 'amountDiff', title: '变化数量', width: '20px' },
+                { name: 'realStock', title: '库存及变化', width: '30px'},
+                //{ name: 'amountDiff', title: '变化数量', width: '20px' },
                 { name: 'timestamp', title: '时间', width: '30px' },
             ]
         });
@@ -218,12 +218,12 @@
                     break;
                 case AMOUNT_DIFF_ENTRY_STATE:
                     data[i].type = '入库';
-                    data[i].amount = '无';
+                    data[i].realStock = '+'+data[i].amountDiff;
                     data[i].amountDiff='+'+data[i].amountDiff;
                     break;
                 case AMOUNT_DIFF_DELIVERY_STATE:
                     data[i].type = '出库';
-                    data[i].amount = '无';
+                    data[i].realStock = '-'+data[i].amountDiff;
                     data[i].amountDiff='-'+data[i].amountDiff;
                     break;
                 case AMOUNT_END:
