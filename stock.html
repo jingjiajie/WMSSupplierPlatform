@@ -11,12 +11,9 @@
                                 </div>
                                 <div class="col-md-9">
                                     <form class="form-inline">
-                                        <label for="material">登陆仓库：</label>
-                                        <select id="material" class="form-control">
+                                        <label for="material">查看物料：</label>
+                                        <select id="material" class="form-control" onchange="refreshMatrtial()">
                                         </select>
-                                        <label for="material-name">物料名称：</label>
-                                        <input id="material-name" class="form-control" --> placeholder="支持模糊搜索"
-                                        />&nbsp;&nbsp;
                                         <label for="date">日期：</label>
                                         <input id="time-input" class="form-control"
                                             placeholder="年-月-日(默认当日)" />&nbsp;&nbsp;
@@ -84,6 +81,8 @@
 </script>
 
 <script>
+    var searchConditions = [];
+    var cachedMaterial = [];
     //$("#delivery").attr("style","display:none;")
     var strSupplier = sessionStorage.getItem('supplier');
     var supplier = JSON.parse(strSupplier);
@@ -91,20 +90,26 @@
     if (supplierPassward.indexOf('chuku') == -1) {
         $("#delivery").hide();
     }
+    var conditions = [
+        { key: 'supplierId', values: [supplier['id']] }
+    ];
+    console.log(conditions);
+    var condition = {
+        conditions: conditions.concat(searchConditions)
+    };
     function loadMateral() {
-        $.get(SERVER_URL + '/warehouse/' + accountBook + '/supply/{}', function (warehouses) {
-            var selectWarehouse = $('#material');
-            cachedWarehouses = warehouses;
-            for (var i = 0; i < warehouses.length; i++) {
-                var warehouse = warehouses[i];
-                selectWarehouse.append('<option value="' + warehouse.id + '">' + warehouse.name + '</option>');
+        $.get(SERVER_URL + '/warehouse/' + accountBook + '/supply/' + JSON.stringify(condition), function (materials) {
+            var selectMaterial = $('#material');
+            cachedMaterial = materials;
+            for (var i = 0; i < materials.length; i++) {
+                var material = materials[i];
+                selectMaterial.append('<option value="' + material.id + '">' + material.materialNo + '</option>');
             }
         }).error(function () {
-            alert('加载仓库信息失败，请刷新重试！');
+            alert('加载物料信息失败，请刷新重试！');
         });
     }
-
-    loadWarehouses();
+    loadMateral();
 </script>
 
 <script>
@@ -141,17 +146,21 @@
 
 <script>
     var searchConditions = []; //搜索时附加的搜索条件
-
+    function refreshMatrtial()
+    {
+        var checkScope = $('#check-scope option:selected').val();
+        console.log(checkScope);
+    }
+    
     function searchClicked() {
+        var supplyId = $('#material option:selected').val();
+        alert(supplyId);
         var strSupplier = sessionStorage.getItem('supplier');
         var supplier = JSON.parse(strSupplier);
         var materialName = $('#material-name').val();
         var time = $('#time-input').val();
         body = {};
         body['supplierId'] = supplier['id'];
-        if (materialName.length > 0) {
-            body['materialName'] = materialName;
-        }
         if (time.length > 0) {
             body['time'] = time;
         }
@@ -256,7 +265,6 @@
             data[i].timestamp = /\d{4}-\d{1,2}-\d{1,2}/g.exec(data[i].timestamp)
             //new Date(data[i].timestamp.replace(/-/g, '/')).toLocaleDateString();
         }
-        //console.log(data);
     }
 
     //base64转码
