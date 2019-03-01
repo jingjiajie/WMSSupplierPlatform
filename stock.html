@@ -12,17 +12,21 @@
                                 <div class="col-md-9">
                                     <form class="form-inline">
                                         <label for="material-name">物料名称：</label>
-                                        <input id="material-name" class="form-control" placeholder="支持模糊搜索" />&nbsp;&nbsp;
+                                        <input id="material-name" class="form-control"
+                                            placeholder="支持模糊搜索" />&nbsp;&nbsp;
                                         <label for="date">日期：</label>
-                                        <input id="time-input" class="form-control" placeholder="年-月-日(默认当日)" />&nbsp;&nbsp;
+                                        <input id="time-input" class="form-control"
+                                            placeholder="年-月-日(默认当日)" />&nbsp;&nbsp;
                                         <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
                                     </form>
                                 </div>
                                 <div class="col-md-1">
                                     <a id="export" class="btn btn-primary">导出Excel</a>
                                 </div>
-                                <div onclick="supplierRemindStock(true)" class="btn btn-primary">查看库存提醒</div>&nbsp;&nbsp;
-                                <div id="delivery" onclick="checkDeliverDetails()" class="btn btn-primary">查看出库详情</div>&nbsp;&nbsp;
+                                <div onclick="supplierRemindStock(true)" class="btn btn-primary">查看库存提醒</div>
+                                &nbsp;&nbsp;
+                                <div id="delivery" onclick="checkDeliverDetails()" class="btn btn-primary">查看出库详情</div>
+                                &nbsp;&nbsp;
                                 <div onclick="checkReturnRecord()" class="btn btn-primary">查看退货原因记录</div>&nbsp;&nbsp;
                             </div>
                         </div>
@@ -80,7 +84,7 @@
     //$("#delivery").attr("style","display:none;")
     var strSupplier = sessionStorage.getItem('supplier');
     var supplier = JSON.parse(strSupplier);
-    var supplierPassward=supplier['supplierPassward'];
+    var supplierPassward = supplier['supplierPassward'];
     if (supplierPassward.indexOf('chuku') == -1) {
         $("#delivery").hide();
     }
@@ -148,19 +152,20 @@
             editing: true,
             sorting: true,
             paging: true,
-            pageSize:100,
+            pageSize: 100,
 
 
             fields: [
+                { name: 'timestamp', title: '时间', width: '30px' },
                 { name: 'materialNo', title: '物料代号', width: '30px' },
                 //{ name: 'supplyId', title: 'supplyId', width: '30px' },
                 { name: 'materialName', title: '物料名称', width: '30px' },
                 { name: 'materialProductLine', title: '物料系列', width: '30px' },
                 { name: 'type', title: '类型', width: '20px' },
                 { name: 'state', title: '检测状态', width: '20px' },
-                { name: 'realStock', title: '库存及变化', width: '30px'},
-                //{ name: 'amountDiff', title: '变化数量', width: '20px' },
-                { name: 'timestamp', title: '时间', width: '30px' },
+                { name: 'realStock', title: '库存及变化', width: '30px' },
+                { name: 'returnQualified', title: '动力退中都合格', width: '30px' },
+                { name: 'returnUnqualified', title: '动力退中都不合格', width: '30px' },
             ]
         });
     }
@@ -196,7 +201,9 @@
         var AMOUNT_DIFF_ENTRY_STATE = 1;
         var AMOUNT_DIFF_DELIVERY_STATE = 2;
         var AMOUNT_PRIME = 0;
-        var AMOUNT_END = 3;
+        //动力退中都状态
+        var Return = 3;
+        var AMOUNT_END = 4;
         for (var i = 0; i < data.length; i++) {
             //映射检测状态
             switch (data[i].state) {
@@ -218,17 +225,20 @@
                     break;
                 case AMOUNT_DIFF_ENTRY_STATE:
                     data[i].type = '入库';
-                    data[i].realStock = '+'+data[i].amountDiff;
-                    data[i].amountDiff='+'+data[i].amountDiff;
+                    data[i].realStock = '+' + data[i].amountDiff;
+                    data[i].amountDiff = '+' + data[i].amountDiff;
                     break;
                 case AMOUNT_DIFF_DELIVERY_STATE:
                     data[i].type = '出库';
-                    data[i].realStock = '-'+data[i].amountDiff;
-                    data[i].amountDiff='-'+data[i].amountDiff;
+                    data[i].realStock = '-' + data[i].amountDiff;
+                    data[i].amountDiff = '-' + data[i].amountDiff;
                     break;
                 case AMOUNT_END:
                     data[i].type = '截止数量';
                     data[i].amountDiff = '/';
+                    break;
+                case Return:
+                    data[i].type = '动力退中都';
                     break;
             }
             //将存货日期保留到日
