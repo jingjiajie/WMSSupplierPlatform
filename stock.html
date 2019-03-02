@@ -12,7 +12,7 @@
                                 <div class="col-md-9">
                                     <form class="form-inline">
                                         <label for="material">查看物料：</label>
-                                        <select id="material" class="form-control" onchange="refreshMatrtial()">
+                                        <select id="material" class="form-control" onchange="searchClicked()">
                                         </select>
                                         <label for="date">日期：</label>
                                         <input id="time-input" class="form-control"
@@ -93,7 +93,7 @@
     var conditions = [
         { key: 'supplierId', values: [supplier['id']] }
     ];
-    console.log(conditions);
+    //console.log(conditions);
     var condition = {
         conditions: conditions.concat(searchConditions)
     };
@@ -146,15 +146,18 @@
 
 <script>
     var searchConditions = []; //搜索时附加的搜索条件
-    function refreshMatrtial()
-    {
-        var checkScope = $('#check-scope option:selected').val();
-        console.log(checkScope);
-    }
-    
     function searchClicked() {
         var supplyId = $('#material option:selected').val();
-        alert(supplyId);
+        $.get(SERVER_URL + '/warehouse/' + accountBook + '/supply/' + JSON.stringify(condition), function (materials) {
+            if (typeof (supplyId) == "undefined") {
+            console.log(materials[0].id);
+        }
+        else {
+        console.log(supplyId);
+        }
+        }).error(function () {
+            alert('加载物料信息失败，请刷新重试！');
+        });
         var strSupplier = sessionStorage.getItem('supplier');
         var supplier = JSON.parse(strSupplier);
         var materialName = $('#material-name').val();
@@ -165,7 +168,6 @@
             body['time'] = time;
         }
         $("#table-stock").jsGrid("search")
-        //initTableStock();
     }
 
     function initTableStock() {
