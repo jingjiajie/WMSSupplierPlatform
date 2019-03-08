@@ -146,20 +146,23 @@
     var searchConditions = []; //搜索时附加的搜索条件
     function searchClicked() {
         var supplyId = $('#material option:selected').val();
-        $.get(SERVER_URL + '/warehouse/' + accountBook + '/supply/' + JSON.stringify(condition), function (materials) {
-            if (typeof (supplyId) == "undefined") {
-            supplyId=materials[0].id;
-            console.log(supplyId);
-        }
-        }).error(function () {
-            alert('加载物料信息失败，请刷新重试！');
-        });
+        // $.get(SERVER_URL + '/warehouse/' + accountBook + '/supply/' + JSON.stringify(condition), function (materials) {
+        //     if (typeof (supplyId1) == "undefined") {
+        //     supplyId1=materials[0].id;
+        //     console.log(supplyId1);
+        // }
+        // }).error(function () {
+        //     alert('加载物料信息失败，请刷新重试！');
+        // });
         var strSupplier = sessionStorage.getItem('supplier');
         var supplier = JSON.parse(strSupplier);
         var materialName = $('#material-name').val();
         var time = $('#time-input').val();
         body = {};
-        body['supplierId'] =supplyId;
+        if (typeof (supplyId1) == "undefined") {
+        body['supplierId'] =-1;}
+        else{
+        body['supplierId']=supplyId;}
         if (time.length > 0) {
             body['time'] = time;
         }
