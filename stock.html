@@ -159,10 +159,11 @@
         var materialName = $('#material-name').val();
         var time = $('#time-input').val();
         body = {};
-        if (typeof (supplyId1) == "undefined") {
-        body['supplierId'] =-1;}
+        if (typeof (supplyId) == "undefined") {
+        body['supplyId'] =-1;
+        body['supplierId']=supplier['id'];}
         else{
-        body['supplierId']=supplyId;}
+        body['supplyId']=supplyId;}
         if (time.length > 0) {
             body['time'] = time;
         }
