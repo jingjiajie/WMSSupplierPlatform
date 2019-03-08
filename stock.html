@@ -197,7 +197,7 @@
     searchClicked();
     function StockController() {
         this.loadData = function () {
-            var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/generate_daily_reports';
+            var url = SERVER_URL + '/warehouse/' + accountBook + '/supplier/generate_daily_reports_by_year';
             var ret = null;
             var bodyJson = JSON.stringify(body);
             $.ajax({
