@@ -182,23 +182,24 @@
             editing: true,
             sorting: true,
             paging: true,
-            pageSize: 1000,
+            pageSize: 10000,
 
 
             fields: [
                 { name: 'timestamp', title: '时间', width: '30px' },
+                { name: 'type', title: '类型', width: '30px' },
                 { name: 'entryNo', title: '到货单号', width: '30px' },
                 { name: 'entryAmountWait', title: '到货待检测数量', width: '20px' },
                 { name: 'entryAmountQua', title: '到货合格数量', width: '20px' },
                 { name: 'entryAmountUnq', title: '到货不合格数量', width: '20px' },
                 { name: 'Unqalifation', title: '自检不良', width: '20px' },
-                { name: 'fenge', title: '', width: '5px' },
+                { name: 'fenge', title: '', width: '1px' },
                 { name: 'amountDiff', title: '中都送动力数量', width: '20px' },
                 { name: 'returnAmountQualified', title: '动力退中都合格', width: '30px' },
                 { name: 'returnAmountUnqualified', title: '动力退中都不合格', width: '30px' },
                 { name: 'returnToSupplierQualified', title: '中都退厂家合格', width: '30px' },
                 { name: 'returnToSupplierUnqualified', title: '中都退常见不合格', width: '30px' },
-                { name: 'fenge', title: '', width: '5px' },
+                { name: 'fenge', title: '', width: '1px' },
                 { name: 'realStockQualified', title: '当日正品数量', width: '30px' },
                 { name: 'realStockUnqualified', title: '当日不合格品数量', width: '30px' },
                 { name: 'realStockWaitingForInspection', title: '当日待检测数量', width: '30px' }
@@ -241,10 +242,31 @@
         var REAL_AMOUNT = 2;
         var MONTH = 3;
         var YEAR = 4;
-        //动力退中都状态
-        var Return = 3;
-        var AMOUNT_END = 4;
         for (var i = 0; i < data.length; i++) {
+            //映射显示类型
+            switch (data[i].type) {
+                case TOTAL:
+                    data[i].type = '退货及出库';
+                    data[i].realStockQualified == '';
+                data[i].realStockUnqualified == '';
+                data[i].realStockWaitingForInspection == '';
+                    break;
+                case AMOUNT_DIFF_ENTRY_STATE:
+                    data[i].type = '入库数据';
+                    data[i].realStockQualified == '';
+                data[i].realStockUnqualified == '';
+                data[i].realStockWaitingForInspection == '';
+                    break;
+                case REAL_AMOUNT:
+                    data[i].type = '当天库存';
+                    break;
+                case MONTH:
+                    data[i].type = '月总结';
+                    break;
+                case YEAR:
+                    data[i].type = '年总结';
+                    break;
+            }
             //将单号处理
             if (data[i].entryNo == '-1') {
                 data[i].entryNo = '';
@@ -252,41 +274,41 @@
             if (data[i].entryAmountUnq != 0) {
                 data[i].Unqalifation = data[i].entryAmountUnq;
             }
-            if(data[i].entryAmountWait==0){
-                data[i].entryAmountWait='';
+            if (data[i].entryAmountWait == 0) {
+                data[i].entryAmountWait = '';
             }
-            if(data[i].entryAmountQua==0){
-                data[i].entryAmountQua='';
+            if (data[i].entryAmountQua == 0) {
+                data[i].entryAmountQua = '';
             }
-            if(data[i].entryAmountUnq==0){
-                data[i].entryAmountUnq='';
+            if (data[i].entryAmountUnq == 0) {
+                data[i].entryAmountUnq = '';
             }
-            if(data[i].amountDiff==0){
-                data[i].amountDiff='';
+            if (data[i].amountDiff == 0) {
+                data[i].amountDiff = '';
             }
-            if(data[i].returnAmountQualified==0){
-                data[i].returnAmountQualified='';
+            if (data[i].returnAmountQualified == 0) {
+                data[i].returnAmountQualified = '';
             }
-            if(data[i].returnAmountUnqualified==0){
-                data[i].returnAmountUnqualified='';
+            if (data[i].returnAmountUnqualified == 0) {
+                data[i].returnAmountUnqualified = '';
             }
-            if(data[i].returnToSupplierQualified==0){
-                data[i].returnToSupplierQualified='';
+            if (data[i].returnToSupplierQualified == 0) {
+                data[i].returnToSupplierQualified = '';
             }
-            if(data[i].returnToSupplierUnqualified==0){
-                data[i].returnToSupplierUnqualified='';
+            if (data[i].returnToSupplierUnqualified == 0) {
+                data[i].returnToSupplierUnqualified = '';
             }
-            if(data[i].type!=REAL_AMOUNT){
-                if(data[i].realStockQualified==0){
-                    data[i].realStockQualified=='';
-                }
-                if(data[i].realStockUnqualified==0){
-                    data[i].realStockUnqualified=='';
-                }
-                if(data[i].realStockWaitingForInspection==0){
-                    data[i].realStockWaitingForInspection=='';
-                }
-            }
+            // if (data[i].type != REAL_AMOUNT) {
+            //     if (data[i].realStockQualified == 0) {
+            //         data[i].realStockQualified == '';
+            //     }
+            //     if (data[i].realStockUnqualified == 0) {
+            //         data[i].realStockUnqualified == '';
+            //     }
+            //     if (data[i].realStockWaitingForInspection == 0) {
+            //         data[i].realStockWaitingForInspection == '';
+            //     }
+            // }
             //将存货日期保留到日
             data[i].timestamp = /\d{4}-\d{1,2}-\d{1,2}/g.exec(data[i].timestamp);
         }
