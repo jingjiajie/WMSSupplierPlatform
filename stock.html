@@ -14,10 +14,10 @@
                                         <label for="material">查看物料：</label>
                                         <select id="material" class="form-control" onchange="searchClicked()">
                                         </select>
-                                        <label for="date">日期：</label>
+                                        <!-- <label for="date">日期：</label>
                                         <input id="time-input" class="form-control"
                                             placeholder="年-月-日(默认当日)" />&nbsp;&nbsp;
-                                        <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp;
+                                        <div onclick="searchClicked()" class="btn btn-primary">搜索</div>&nbsp;&nbsp; -->
                                     </form>
                                 </div>
                                 <div class="col-md-1">
@@ -165,9 +165,6 @@
         }
         else {
             body['supplyId'] = supplyId;
-        }
-        if (time.length > 0) {
-            body['time'] = time;
         }
         $("#table-stock").jsGrid("search")
     }
