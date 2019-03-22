@@ -245,23 +245,50 @@
                 case TOTAL:
                     data[i].type = '退货及出库';
                     data[i].realStockQualified == '';
-                data[i].realStockUnqualified == '';
-                data[i].realStockWaitingForInspection == '';
+                    data[i].realStockUnqualified == '';
+                    data[i].realStockWaitingForInspection == '';
                     break;
                 case AMOUNT_DIFF_ENTRY_STATE:
                     data[i].type = '入库数据';
                     data[i].realStockQualified == '';
-                data[i].realStockUnqualified == '';
-                data[i].realStockWaitingForInspection == '';
+                    data[i].realStockUnqualified == '';
+                    data[i].realStockWaitingForInspection == '';
                     break;
                 case REAL_AMOUNT:
                     data[i].type = '当天库存';
+                    data[i].entryAmountWait = '';
+                    data[i].entryAmountQua = '';
+                    data[i].entryAmountUnq = '';
+                    data[i].Unqalifation = '';
+                    data[i].amountDiff = '';
+                    data[i].returnAmountQualified = '';
+                    data[i].returnAmountUnqualified = '';
+                    data[i].returnToSupplierQualified = '';
+                    data[i].returnToSupplierUnqualified = '';
                     break;
                 case MONTH:
                     data[i].type = '月总结';
+                    data[i].entryAmountWait = '';
+                    data[i].entryAmountQua = '';
+                    data[i].entryAmountUnq = '';
+                    data[i].Unqalifation = '';
+                    data[i].amountDiff = '';
+                    data[i].returnAmountQualified = '';
+                    data[i].returnAmountUnqualified = '';
+                    data[i].returnToSupplierQualified = '';
+                    data[i].returnToSupplierUnqualified = '';
                     break;
                 case YEAR:
                     data[i].type = '年总结';
+                    data[i].entryAmountWait = '';
+                    data[i].entryAmountQua = '';
+                    data[i].entryAmountUnq = '';
+                    data[i].Unqalifation = '';
+                    data[i].amountDiff = '';
+                    data[i].returnAmountQualified = '';
+                    data[i].returnAmountUnqualified = '';
+                    data[i].returnToSupplierQualified = '';
+                    data[i].returnToSupplierUnqualified = '';
                     break;
             }
             //将单号处理
@@ -271,6 +298,7 @@
             if (data[i].entryAmountUnq != 0) {
                 data[i].Unqalifation = data[i].entryAmountUnq;
             }
+            /*
             if (data[i].entryAmountWait == 0) {
                 data[i].entryAmountWait = '';
             }
@@ -294,7 +322,7 @@
             }
             if (data[i].returnToSupplierUnqualified == 0) {
                 data[i].returnToSupplierUnqualified = '';
-            }
+            }*/
             // if (data[i].type != REAL_AMOUNT) {
             //     if (data[i].realStockQualified == 0) {
             //         data[i].realStockQualified == '';
