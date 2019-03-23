@@ -244,15 +244,15 @@
             switch (data[i].type) {
                 case TOTAL:
                     data[i].type = '退货及出库';
-                    data[i].realStockQualified == '';
-                    data[i].realStockUnqualified == '';
-                    data[i].realStockWaitingForInspection == '';
+                    data[i].realStockQualified = '';
+                    data[i].realStockUnqualified = '';
+                    data[i].realStockWaitingForInspection = '';
                     break;
                 case AMOUNT_DIFF_ENTRY_STATE:
                     data[i].type = '入库数据';
-                    data[i].realStockQualified == '';
-                    data[i].realStockUnqualified == '';
-                    data[i].realStockWaitingForInspection == '';
+                    data[i].realStockQualified = '';
+                    data[i].realStockUnqualified = '';
+                    data[i].realStockWaitingForInspection = '';
                     break;
                 case REAL_AMOUNT:
                     data[i].type = '当天库存';
